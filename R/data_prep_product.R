@@ -3,6 +3,7 @@
 ##  Pharma MMC
 ##
 ##   - data prep: product lists by therapetic class
+##
 ##   - file structure:
 ##       root
 ##        |--medtrack_data
@@ -15,14 +16,21 @@
 
 library(stringr)
 library(readxl)
+library(tibble)
 library(uuid)
 library(dbplyr)
 
+## dir names
 proj_dir <- "C:/Users/T430/Google Drive/PhD/Research/MMC/pharma_encounters/mmc-pharma"
 medtrack_dir <- file.path(proj_dir,"medtrack_data")
 medtrack_product_dir <- file.path(medtrack_dir,"products")
 
+## set working dir
 setwd(proj_dir)
+
+##============================================
+## Initialize data list
+##--------------------------------------------
 
 ## Excel files
 files <- dir(medtrack_product_dir, pattern = "\\.xlsx{0,1}$")
@@ -32,13 +40,18 @@ files <- dir(medtrack_product_dir, pattern = "\\.xlsx{0,1}$")
 
 ## get sheets
 sheets <- excel_sheets(file.path(medtrack_product_dir, file))
-sheets <- sheets[!grepl("^Sheet",sheets,ignore.case = T)]
+sheets <- sheets[!grepl("^Sheet",sheets)]
 
 ## init list of combined dataframes
 l <- list()
 for (sheet in sheets) {
   l[[sheet]] <- data.frame()
 }
+
+
+##============================================
+## Load and combine data files
+##--------------------------------------------
 
 ## load files loop
 for (file in files) {
@@ -53,16 +66,16 @@ for (file in files) {
   for (sheet in sheets) {
     cat(sprintf("  sheet %s\n", sheet))
     
-    ## load data
+    ## absolute path of data file
     file_full_path <- file.path(medtrack_product_dir, file)
     
-    ## deleted header from Product Synopsis sheet but not from others
-    ## skip 11 lines of header material in other sheets
-    if (sheet == "Product Synopsis") {
-      df <- read_excel(file_full_path, sheet = sheet, na="--")
-    } else {
-      df <- read_excel(file_full_path, sheet = sheet, na="--", skip = 11)
-    }
+    ## already deleted header from Product Synopsis sheet 
+    ##  but not from other sheets in workbook;
+    ##  skip 11 lines of header material in other sheets
+    skip.lines <- ifelse(sheet == "Product Synopsis", 0, 11)
+    
+    ## load data
+    df <- read_excel(file_full_path, sheet = sheet, na="--", skip = skip.lines)
     
     ## clean column names
     names(df) <- str_to_lower(str_replace_all(names(df),"[\\s\\/]+","_"))
@@ -93,17 +106,22 @@ for (i in 1:length(firm_name_list)) {
   if (i %% 2000 == 0) cat(sprintf(" i = %s (%.3f%s)\n",i,100*i/length(firm_name_list),"%"))
 }
 
+## convert data.frame to tibble
+l$company_product <- tibble::as_tibble(l$company_product)
 
+
+##============================================
 ## save data list
+##--------------------------------------------
 out_file <- file.path(medtrack_dir, "products_list.rds")
 saveRDS(l, file = out_file)
 
-## end
+##---end---
 
 
-
-
-# ##------------------ Descriptives ------------------
+##============================================
+##  Descriptives
+##--------------------------------------------
 # ## frequency of development phase
 # prcnt <- plyr::count(l$`Product Synopsis`$highest_phase_of_development)
 # prcnt <- prcnt[c(9,8,5,6,7,4,1,3,2),]
@@ -114,7 +132,18 @@ saveRDS(l, file = out_file)
 # tycnt <- plyr::count(l$`Product Synopsis`$product_type)
 # tycnt$pct <- round(100 * tycnt$freq / sum(tycnt$freq), 1)
 # print(tycnt)
-
+#
+# ## frequency of product type
+# cocnt <- plyr::count(l$company_product$company_name)
+# cocnt$pct <- round(100 * cocnt$freq / sum(cocnt$freq), 2)
+# cocnt <- cocnt[order(cocnt$freq, decreasing = T), ]
+# View(cocnt)
+# 
+# ## Frequency of treated condition
+# z = plyr::count(l$`Product Synopsis`$condition_treated)
+# z = z[order(z$freq, decreasing = T), ]
+# z$pct <- round(100 * z$freq / sum(z$freq), 2)
+# print(head(z,10))
 
 
 
