@@ -38,7 +38,7 @@ files <- dir(medtrack_product_dir, pattern = "\\.xlsx{0,1}$")
 # ## lines to skip for Medtrack header atop data table
 # skip.lines <- 1
 
-## get sheets
+## get sheets (excluding unedited sheets with default name "Sheet__")
 sheets <- excel_sheets(file.path(medtrack_product_dir, file))
 sheets <- sheets[!grepl("^Sheet",sheets)]
 
@@ -94,12 +94,18 @@ print(summary(l))
 ##============================================
 ## add product_firm 1-to-many relation table
 ##--------------------------------------------
+
 ## add UUID to product
 l$`Product Synopsis`$uuid <- apply(l$`Product Synopsis`, 1, function(x)UUIDgenerate())
+
 ## add split company name comma-separated list (but don't split company name ends in ", Inc.")
 firm_name_list <- str_split(l$`Product Synopsis`$company_name, ",(?!\\s+Inc) ")
+
 ## create firm_product dataframe
 l$company_product <- data.frame()
+
+## **slow** loop for >200k productds
+## cache or save table and avoid rerunning
 for (i in 1:length(firm_name_list)) {
   .tmp <- data.frame(product_uuid=l$`Product Synopsis`$uuid[i], company_name=firm_name_list[[i]])
   l$company_product <- rbind(l$company_product, .tmp)
@@ -133,7 +139,7 @@ saveRDS(l, file = out_file)
 # tycnt$pct <- round(100 * tycnt$freq / sum(tycnt$freq), 1)
 # print(tycnt)
 #
-# ## frequency of product type
+# ## frequency of firm
 # cocnt <- plyr::count(l$company_product$company_name)
 # cocnt$pct <- round(100 * cocnt$freq / sum(cocnt$freq), 2)
 # cocnt <- cocnt[order(cocnt$freq, decreasing = T), ]
