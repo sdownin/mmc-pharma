@@ -298,7 +298,7 @@ X3d <- X3.us - X3.eu
 
 ## run CausalImpact Bayesian Structual Time Series Inference of causal impact
 set.seed(1111)
-imp3 <- CausalImpact(X3d, range.pre, range.post, alpha = .01, 
+imp3 <- CausalImpact(X3d/1000, range.pre, range.post, alpha = .01, 
                      model.args = list(niter=10000, prior.level.sd=.5))
 
 ## create plot
