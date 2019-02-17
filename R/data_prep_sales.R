@@ -2,7 +2,8 @@
 ##
 ##  Pharma MMC
 ##
-##   - data prep: product lists by therapetic class
+##   - data prep: sales data pre-analysis, 
+##                Bayesian structural timeseries
 ##
 ##   - file structure:
 ##       root
