@@ -73,7 +73,7 @@ print(region.summary)
 
 ## Firms by regional sphere_group of influence (coarse separation by continent)
 firms.us <- c("Johnson & Johnson",'Pfizer','Amgen','Biogen','Eli Lilly','AbbVie',
-              'Merck','Abbott','Gilead Sciences','Biogen','Bristol-Myers Squibb')
+              'Merck','Abbott','Gilead Sciences','Bristol-Myers Squibb')
 firms.eu <- c('Novartis','GlaxoSmithKline','AstraZeneca','Roche',
               'Sanofi','Bayer','Novo Nordisk')
 
@@ -183,7 +183,7 @@ rev.plot1 <- ggplot(aes(x=date, y=sales_total/1000, colour=sphere_group, pch=sph
   facet_grid(region_sales ~ .) +
   geom_vline(xintercept = as.Date("2013-01-01"), lty=2, lwd=1.05, col='gray') + 
   geom_vline(xintercept = as.Date("2010-03-01"), lty=3, lwd=1.05, col='gray') + 
-  ylab("Total Sales (US$ Bn.)") + labs(colour = "Firm Group", pch="Firm Group") +
+  ylab("Total Sales (US$ Bn.)") + labs(colour = "Competitor\nConstellation", pch="Competitor\nConstellation") +
   ggtitle("Healthcare Legislation Natural Experiment:\nImpact of the PPACA on Pharmaceutical Sales in USA vs Europe") + 
   annotate("text", x=as.Date("2011-11-20"), y=a.y, label="Individual\nMandate", size=4, col='darkgray') +
   annotate("text", x=as.Date("2009-05-20"), y=a.y, label="PPACA\nSigned", size=4, col='darkgray') +
@@ -304,7 +304,7 @@ imp3 <- CausalImpact(X3d/1000, range.pre, range.post, alpha = .01,
 ## create plot
 ciplot3 <- plot(imp3) + 
   ggtitle(sprintf("PPACA Effect in USA:  %s",pvalstr(imp3$summary$p[2]))) + 
-  ylab("Revenue Difference in USA (US$ Bn.)") +
+  ylab("Competitor Constellation\nRevenue Difference in USA (US$ Bn.)") +
   theme_bw()
 ## echo plot
 ciplot3
