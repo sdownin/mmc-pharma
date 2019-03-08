@@ -245,7 +245,7 @@ library(ggplot2)
 ## data subset for plot
 plt.idx <- which(
   grp.sales$year > 2002 & grp.sales$year < 2018 & 
-  grp.sales$region_sales %in% c('USA','Europe','Japan') & 
+  grp.sales$region_sales %in% c('USA','Europe') &   #Japan
   grp.sales$sphere_group %in% c('American','European')
 )
 df.plot <- grp.sales[plt.idx, ]
@@ -292,7 +292,7 @@ rev.plot1 <- ggplot(aes(x=date, y=sales_total/1000, colour=sphere_group, pch=sph
   ylab("Total Sales (US$ Bn.)") + xlab("Year") + 
   labs(colour = "Competitor\nConstellation", pch="Competitor\nConstellation") +
   ggtitle("Pharmaceutical Competitor Constellation Sales in USA vs Europe") + 
-  annotate("text", x=as.Date("2011-11-20"), y=a.y, label="Individual\nMandate", size=4, col='darkgray') +
+  annotate("text", x=as.Date("2011-11-20"), y=a.y, label="Coverage\nBegan", size=4, col='darkgray') +
   annotate("text", x=as.Date("2009-05-20"), y=a.y, label="PPACA\nSigned", size=4, col='darkgray') +
   scale_color_manual(values=c('black', 'darkgrey')) + 
   theme_classic() + theme(legend.position = 'right')
@@ -375,7 +375,7 @@ X3d <- X3.us - X3.eu
 
 ## run CausalImpact Bayesian Structual Time Series Inference of causal impact
 set.seed(1111)
-imp3 <- CausalImpact(X3d/1000, range.pre, range.post, alpha = .01, 
+imp3 <- CausalImpact(X3d, range.pre, range.post, alpha = .01, 
                      model.args = list(niter=10000, prior.level.sd=.5))
 
 ## create plot
