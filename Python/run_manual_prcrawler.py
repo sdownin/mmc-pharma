@@ -32,9 +32,11 @@ def run():
     
     ## parse arguments
     par = ArgumentParser(description="Run Manual Industry Press Release Crawler")
-    par.add_argument('-f','--files', type=str, help="The data files to process") 
+    par.add_argument('-f','--files', type=str, help="The data files to process (comma separated)") 
+    par.add_argument('-n','--names', type=str, help="The firm names to crawl (comma separated)") 
     args = par.parse_args()
     files = args.files.split(',') if args.files is not None else []
+    names = args.names.split(',') if args.names is not None else []
     
     ## if no files specified, run all files in data dir
     if not files:
@@ -54,19 +56,21 @@ def run():
         
         ## load data
         df = pd.read_csv(os.path.join(data_dir, file), na_values=[""])
-        
-        ## subset by indicated names
-        df2 = df.loc[ , ]
            
         ## run web crawlers per domain in data file
-        for index, row in df2.iterrows():
+        for index, row in df.iterrows():
+            ## check firm name
+            if names and row.name not in names:
+                next
             ## dynamic content: temporarily skip
             if int(row.pdf):
-                print(' skipping %s for dynamic pdf content' % row.firm)
+                print(' skipping %s for dynamic pdf content' % row.name)
                 next
             ## runner crawl spider 
+            print(' running firm %s' % row.name)
             clr = ManualPRCrawler(row.to_dict(), data_dir)
             clr.fetch_article_urls()
+            clr.fetch_articles()
             print(clr.article_urls)
             
 

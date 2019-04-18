@@ -109,7 +109,11 @@ class ManualPRCrawler(object):
                     
         print(' fetched %s article urls' % (len(self.article_urls) - start_urls_len))
         
-    
+    def fetch_articles(self):
+        """ extract article html content
+        """
+        pass
+
     
 firms = [
     {
