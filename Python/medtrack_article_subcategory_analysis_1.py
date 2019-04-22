@@ -60,7 +60,8 @@ df['first_category'] = df.news_category.apply(lambda x: x.split(',')[0].lower().
 df['first_subcategory'] = df.news_subcategory.apply(lambda x: x.split(',')[0][:12].lower().strip() if isinstance(x, str) else None)
 df = df.loc[(df.year > 2004) & (df.year <= 2018),].copy()
 
-print('articles with subcategory: %s' % df.loc[~pd.isna(df.news_subcategory), ].shape[0])
+print('articles with subcategory: %s' % 
+      df.loc[~pd.isna(df.news_subcategory), ].shape[0])
 
 nsct = df[['year','news_subcategory']].groupby('year').count()
 nsct.plot()
@@ -76,6 +77,9 @@ nsct3.plot(figsize=(10,10), logy=True)
 
 nsct3 = df[['year','news_subcategory']].groupby(['year','news_subcategory']).size()
 nsct3.plot(kind='line')
+
+
+
 
 def lemmatize_stemming(text):
     return stemmer.stem(WordNetLemmatizer().lemmatize(text, pos='v'))

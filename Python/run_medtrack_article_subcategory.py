@@ -6,17 +6,16 @@ Created on Thu Apr 18 01:21:28 2019
 """
 import os, pymongo, re
 import pandas as pd
-from argparse import ArgumentParser
 ## if called from outside project dir
 work_dir = 'C:\\Users\\T430\\Google Drive\\PhD\\Research\\MMC\\pharma_encounters\\mmc-pharma'
 os.chdir(os.path.join(work_dir, 'Python'))
-from medtrack_article_parser import MedtrackArticle, fix_header
+from medtrack_article_parser import fix_header
 
 
 def parse_data_filename(x):
     """ data filename format
         ex: 'Medtrack_CE-News_Apr2019_mylan-NasdaqGS-MYL.xls'
-        {Medtrack_CE-News}_{month}{year}_{firm}-{exchange}-{symbol}.xls
+        Medtrack_CE-News_{month}{year}_{firm}-{exchange}-{symbol}.xls
     """
     base = 'Medtrack_CE-News_'
     x = x.replace(base, '')
