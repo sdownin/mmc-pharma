@@ -1,0 +1,116 @@
+
+
+-----------------------------------
+New Analysis started.
+Date and time: 24/04/2019 21:17:05
+New results follow.
+-----------------------------------
+
+RSiena version 1.2-3 (08 Sep 17)
+
+
+@1
+Estimation by stochastic approximation algorithm.
+=================================================
+
+Random initialization of random number stream.
+Current random number seed is 291635.
+Effects object used: pharmaEffects 
+Estimation method: conditional moment estimation
+Conditioning variable is the total number of observed changes ("distance") 
+in behavioral variable  
+Distances for simulations are
+period   :   1   2   3   4   5   6   7   8   9  10  11
+distance :    3  10  11  10  11   8   3   5   1   4   1.
+Standard errors are estimated with the likelihood ratio method.
+Dolby method (regression on scores) is used.
+Initial value of gain parameter is  0.4000000.
+Reduction factor for gain parameter is  0.5000000.
+Number of subphases in Phase 2 is 4.
+
+Initial parameter values are 
+  0.1  Rate parameter                         0.3093
+  0.2  Rate parameter                         1.0078
+  0.3  Rate parameter                         1.1076
+  0.4  Rate parameter                         1.0078
+  0.5  Rate parameter                         1.1076
+  0.6  Rate parameter                         0.8082
+  0.7  Rate parameter                         0.3093
+  0.8  Rate parameter                         0.5089
+  0.9  Rate parameter                         0.1098
+  0.10 Rate parameter                         0.4091
+  0.11 Rate parameter                         0.1098
+  1. eval:  outdegree (density)                             0.0638
+  2. eval:  4-cycles (1)                                    0.0000
+
+
+Observed values of target statistics are
+  1. Number of ties                                                    2645.0000
+  2. (Number 4-cycles)^1/1)                                            93342.0000
+
+ 2 parameters, 2 statistics
+
+Estimation of derivatives by the LR method (type 1).
+
+
+@2
+End of stochastic approximation algorithm, phase 3.
+---------------------------------------------------
+
+Total of 1558 iterations.
+Parameter estimates based on 558 iterations,
+basic rate parameters as well as 
+convergence diagnostics, covariance and derivative matrices based on 1000 iterations.
+
+Information for convergence diagnosis.
+Averages, standard deviations, and t-ratios for deviations from targets:
+  1.   0.0240   8.1566   0.0029 
+  2.  -8.4160 856.6115  -0.0098 
+
+Good convergence is indicated by the t-ratios being close to zero.
+
+Overall maximum convergence ratio =  0.0221 .
+
+
+
+@2
+Estimation Results.
+-------------------
+
+Regular end of estimation algorithm.
+Total of 1558 iteration steps.
+
+
+@3
+Estimates and standard errors
+                             
+Rate parameters:
+ 0.1  Rate parameter period 1     0.1648  (   0.0978)
+ 0.2  Rate parameter period 2     0.5848  (   0.1897)
+ 0.3  Rate parameter period 3     0.6125  (   0.1889)
+ 0.4  Rate parameter period 4     0.5835  (   0.1879)
+ 0.5  Rate parameter period 5     0.6376  (   0.1976)
+ 0.6  Rate parameter period 6     0.4519  (   0.1639)
+ 0.7  Rate parameter period 7     0.1648  (   0.0956)
+ 0.8  Rate parameter period 8     0.2848  (   0.1350)
+ 0.9  Rate parameter period 9     0.0531  (   0.0534)
+ 0.10 Rate parameter period 10     0.2186  (   0.1143)
+ 0.11 Rate parameter period 11     0.0544  (   0.0543)
+
+Other parameters:
+ 1. eval:  outdegree (density)                                    -1.6314  (   0.2761)
+ 2. eval:  4-cycles (1)                                            0.0218  (   0.0025)
+
+
+@3
+Covariance matrices
+                   
+Covariance matrix of estimates (correlations below diagonal):
+     0.076     -0.001
+    -0.836      0.000
+
+Derivative matrix of expected statistics X by parameters and
+covariance/correlation matrix of X can be found using
+summary(ans) within R, or by using the 'verbose' option in Siena07.
+ 
+Total computation time 30.16 seconds.
