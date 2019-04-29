@@ -33,6 +33,8 @@ medtrack_dir <- file.path(proj_dir,"medtrack_data")
 medtrack_product_dir <- file.path(medtrack_dir,"products")
 medtrack_sales_dir <- file.path(medtrack_dir,"sales")
 
+image_file <- 'mmc_saom_dyadic_covar.RData'
+
 ## set working dir
 setwd(proj_dir)
 
@@ -168,6 +170,55 @@ products_firm_file <- file.path(medtrack_dir, "products_firm_sales_list.rds")
 l <- readRDS(products_firm_file)
 
 
+
+
+##============================================
+## Load news/events data for competition
+##--------------------------------------------
+con <- mongo(collection = 'news_firm', db = 'medtrack', url = 'mongodb://127.0.0.1')
+ne <- con$find('{}') ## string type for news_subcategory
+ne <- ne[which(ne$news_subcategory!='NaN'), ]
+ne <- ne[which( !is.na(ne$news_subcategory) & ne$news_subcategory!='--' & ne$news_subcategory!='' ), ]
+ne$news_body <- NULL
+ne$year <- year(mdy(ne$release_date))
+
+print(dim(ne))
+print(names(ne))
+
+##
+# Complexity measure of actions 
+#  @see Yu, Subramaniam, & Cannella, 2009
+##
+complexity <- function(x, scale=FALSE) {
+  sumx <- sum(x)
+  sq.prop <- sapply(x, function(k) (k/sumx)^2 )
+  y <- 1/sum(sq.prop)
+  if (scale)
+    return(y / length(x))
+  return(y)
+}
+
+
+##
+# return integer values for any inputs vectors
+##
+behaviorDV <- function(x.do, x.all, limit=7) {
+  r <- seq(0, limit)
+  p <- r / max(r)
+  q <- quantile(x.all, probs = p)
+  b <- sapply(x.do, function(x_i){
+    for (i in 1:length(q)) {
+      q_i <- q[i]
+      if (x_i <= q_i) {
+        return(i-1)
+      }
+    }
+    return(NA)
+  })
+  return(b)
+}
+
+
 ##===========================================
 ## Get Firm-Market network 
 ##  (by sales>0 --> active in market)
@@ -223,10 +274,17 @@ dat <- dat[which(dat$num_firms >= 1), ]
 
 ## subset to positive sales in years
 trtyr <- 2014
-yr1 <- 2010  # 2006
-yrs <- as.character(yr1:2017)
+# yr1 <- 2008  # 2006
+# yrs <- as.character(yr1:2017)
 # yrs <- as.character(c(2010, 2013, 2016))
+pdyrs <- list(
+  as.character(2009:2011),
+  as.character(2012:2014),
+  as.character(2015:2017)
+)
+yrs <- unlist(pdyrs)
 nyrs <- length(yrs)
+npds <- length(pdyrs)
 dimYrs <- 'Years'
 idx <- apply(dat[,yrs], 1, function(x) !(all(is.na(x)) | all(x==0)) )
 dat <- dat[idx,]
@@ -237,9 +295,9 @@ dat <- dat[, !names(dat) %in% dropyrs]
 dat <- dat[which(dat$region=='Total Global Sales'),]
 
 ## rows by columns
-mkt_name <- 'therapeutic_category' 
-sep <- ', '
-mkts <- unique(unlist(strsplit(dat[,mkt_name], sep)))
+mkt_name <- 'condition_treated' ##'therapeutic_category' 
+sep <- '\\(\\w+\\)'
+mkts <- unique(unlist(strsplit(dat[,mkt_name], sep, perl = T)))
 #
 dimnameRows <- 'Firms'
 dimnameCols <- 'Markets'
@@ -247,204 +305,178 @@ nrows <- length(firms)
 ncols <- length(mkts)
 #
 netWaves <- c() ##trtWaves <- c()
-moTrtWaves <- c()
-dyTrtWaves <- c()
-moTrtLinearWaves <- c()
-dyTrtLinearWaves <- c()
-for (k in 1:length(yrs)) {
-  yr <- yrs[k]
-  cat(sprintf(' yr %s (%.1f%s)\n',yr, 100*k/nyrs,'%'))
+salesWaves <- c()
+#
+for (k in 1:npds) {
+  yrs <- pdyrs[[k]]
+  cat(sprintf('\n pd %s [%s-%s] (%.1f%s) ',k,yrs[1],yrs[length(yrs)], 100*k/npds,'%'))
   yrnet <- matrix(0, nrow = nrows, ncol = ncols)
+  yrsales <- matrix(0, nrow = nrows, ncol = ncols)
   for (j in 1:length(mkts)) {
+    if (j %% 100 == 0) cat(sprintf('%s ',j))
     mk <- mkts[j]
     for (i in 1:length(firms)) {
       fm <- firms[i]
-      dat[is.na(dat[,yr]), yr] <- 0
-      idx.mk <- which(grepl(mk, dat[,mkt_name]) & grepl(fm, dat$firms) &  dat[,yr]>0 )
+      dat[,yrs][is.na(dat[,yrs])] <- 0
+      idx.mk <- which(                               ### Row indices by:
+          grepl(mk, dat[,mkt_name]) &                ## market
+          grepl(fm, dat$firms) &                     ## firm
+          apply(dat[,yrs], 1, function(x)any(x>0))   ## years
+        )
       if (length(idx.mk)>0) {
         yrnet[i,j] <- 1
+        sumij <- sum(colSums(dat[idx.mk, yrs], na.rm = T), na.rm = T)
+        yrsales[i,j] <- ifelse(is.na(sumij) | sumij==0, 0, sumij)
       }
     }
   }
   netWaves <- c(netWaves, yrnet)
-  yrint <- as.numeric(yr)
-  trt <- ifelse(yrint >= trtyr, 1, 0)
-  trtlinear <- ifelse(yrint >= trtyr, 1+yrint-trtyr, 0)
-  cat(sprintf(' trt %s, trtlinear %s\n',trt, trtlinear))
-  moTrtWaves <- c(moTrtWaves, rep(trt, nrows))
-  dyTrtWaves <- c(dyTrtWaves, matrix(trt, nrow = nrows, ncol=ncols))
-  moTrtLinearWaves <- c(moTrtLinearWaves, rep(trtlinear, nrows))
-  dyTrtLinearWaves <- c(dyTrtLinearWaves, matrix(trtlinear, nrow = nrows, ncol=ncols))
+  salesWaves <- c(salesWaves, yrsales)
 }
+
 #
-netWavesArray <- array(netWaves, dim=c(nrows, ncols, nyrs))
+netWavesArray <- array(netWaves, dim=c(nrows, ncols, npds))
+
+#
+salesMarketWavesArray <- array(netWaves, dim=c(nrows, ncols, npds))
+salesWavesSum <-  c() 
+for (k in 1:npds) {
+  salesWavesSum <- c(salesWavesSum,   rowSums(salesMarketWavesArray[,,k], na.rm = T) )
+}
+salesWavesArray <- array(behaviorDV(salesWavesSum, salesWavesSum), dim=c(nrows, npds))
+
+# dyadic MMC
+dyadMMC.all <- c()
+for (w in 1:npds) {
+  X <- as.matrix(netWavesArray[,,w])
+  ffw <- X %*% t(X)
+  diag(ffw) <- 0
+  dyadMMC.all <- c(dyadMMC.all, ffw)  ## MMC sum
+}
+dyadMMCWaves <- c()
+for (w in 1:npds) {
+  X <- as.matrix(netWavesArray[,,w])
+  ffw <- X %*% t(X)  ## MMC sum
+  diag(ffw) <- 0     ## no self-MMC
+  dyadMMCWaves <- c(dyadMMCWaves, behaviorDV(ffw, dyadMMC.all))
+}
+dyadMMCWavesArray <- array(dyadMMCWaves, dim=c(nrows, nrows, npds))
+# dyadFmMMCWavesArray <- array()
+
+
 #
 FIRMS <- sienaNodeSet(nrows, 'FIRMS', firms)
+# FIRMS2 <- sienaNodeSet(nrows, 'FIRMS', firms)
 MARKETS <- sienaNodeSet(ncols, 'MARKETS', mkts)
-#
-depMMC <- sienaDependent(netWavesArray, type="bipartite", nodeSet=c('FIRMS','MARKETS'), 
-                         sparse = FALSE, allowOnly = FALSE)
-# TREATMENT
-moTrtArray <- array(moTrtWaves, dim=c(nrows, nyrs))
-moCovTrt <- varCovar(moTrtArray, nodeSet="FIRMS")
-#
-# dyTrtArray <- array(dyTrtWaves, dim=c(nrows, ncols, nyrs))
-# dyCovTrt <- varDyadCovar(dyTrtArray, nodeSet=c("FIRMS",'MARKETS'))
-#
-moTrtLinearArray <- array(moTrtLinearWaves, dim=c(nrows, nyrs))
-moCovTrtLinear <- varCovar(moTrtLinearArray, nodeSet="FIRMS")
-#
-# dyTrtLinearArray <- array(dyTrtLinearWaves, dim=c(nrows, ncols, nyrs))
-# dyCovTrtLinear <- varDyadCovar(dyTrtLinearArray, nodeSet=c("FIRMS",'MARKETS'))
-#
-pharmaDat <- sienaDataCreate(depMMC, moCovTrt,    ##dyCovTrt, dyCovTrtLinear, 
-                             nodeSets=list(FIRMS, MARKETS) ) #,smoke1, alcohol
-#
-pharmaEffects <- getEffects(pharmaDat)
-#
-# effectsDocumentation(pharmaEffects)
-# print01Report(pharmaDat, modelname="pharma-test-1")
-#
-pharmaEffects <- includeEffects(pharmaEffects, cycle4, name="depMMC")
-# pharmaEffects <- includeEffects(pharmaEffects, outAct, name="depMMC")
-# pharmaEffects <- includeEffects(pharmaEffects, outActSqrt, name="depMMC")
-pharmaEffects <- includeEffects(pharmaEffects, outAct, name="depMMC")
-# pharmaEffects <- includeEffects(pharmaEffects, outInAss, name="depMMC")
-pharmaEffects <- includeTimeDummy(pharmaEffects, cycle4)
-# pharmaEffects <- includeEffects(pharmaEffects, egoSqX, name="depMMC", interaction1 = 'moCovTrtLinear', type = 'eval')
-# pharmaEffects <- includeEffects(pharmaEffects, egoRThresholdX, name="depMMC", interaction1 = 'moCovTrtLinear',  type = 'eval')
-# pharmaEffects <- includeEffects(pharmaEffects, egoLThresholdX, name="depMMC", interaction1 = 'moCovTrtLinear')
-# pharmaEffects <- includeEffects(pharmaEffects, altInDist2, name="depMMC", interaction1 = 'moCovTrt')
-# pharmaEffects <- includeEffects(pharmaEffects, totInDist2, name="depMMC", interaction1 = 'moCovTrt')
-#
-# pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="depMMC", interaction1 = 'moCovTrt')
-# pharmaEffects <- includeEffects(pharmaEffects, sameWXClosure, name="depMMC", interaction1 = 'moCovTrt')
-# pharmaEffects <- includeEffects(pharmaEffects, from, name="depMMC", interaction1 = 'moCovTrt')
-# pharmaEffects <- includeEffects(pharmaEffects, to, name="depMMC", interaction1 = 'moCovTrt')
-#
-pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-1')
 
-pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
-                         batch = T,   returnDeps = T, ## necessary for GOF
-                         useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK')
-pharmaResults
-# summary(pharmaResults)
-screenreg(pharmaResults, digits = 4)
 
-#
-gofo1f <- sienaGOF(pharmaResults, OutdegreeDistribution, join=TRUE,
-                   varName="depMMC", verbose = T)
-plot(gofo1f)
-
-##============================================
-## Load news/events data for competition
-##--------------------------------------------
-con <- mongo(collection = 'news_firm', db = 'medtrack', url = 'mongodb://127.0.0.1')
-ne <- con$find('{}') ## string type for news_subcategory
-ne <- ne[which(ne$news_subcategory!='NaN'), ]
-ne <- ne[which( !is.na(ne$news_subcategory) & ne$news_subcategory!='--' & ne$news_subcategory!='' ), ]
-ne$news_body <- NULL
-ne$year <- year(mdy(ne$release_date))
-
-print(dim(ne))
-print(names(ne))
-
-##
-# Complexity measure of actions 
-#  @see Yu, Subramaniam, & Cannella, 2009
-##
-complexity <- function(x, scale=FALSE) {
-  sumx <- sum(x)
-  sq.prop <- sapply(x, function(k) (k/sumx)^2 )
-  y <- 1/sum(sq.prop)
-  if (scale)
-    return(y / length(x))
-  return(y)
-}
 
 ## behavior (competitive aggressiveness)
 be <- data.frame()
-for (yr in yrs) {
-  cat(sprintf('yr %s\n', yr))
-  year <- as.numeric(yr)
-  ne.yr <- ne[which(ne$year==year), ]
+for (k in 1:npds) {
+  yrs <- pdyrs[[k]]
+  cat(sprintf(' pd %s [%s-%s]\n', k, yrs[1], yrs[length(yrs)]))
+  years <- as.numeric(yrs)
+  ne.yrs <- ne[which(ne$year %in% years), ]
   for (firm in firms) {
-    ne.yr.f <- ne.yr[which(ne.yr$firm==firm), ]
-    if(nrow(ne.yr.f)>0) {
-      ne.yr.f.c <- plyr::count(ne.yr.f$news_subcategory)
-      activ <- nrow(ne.yr.f)
-      compl <- complexity(ne.yr.f.c$freq)
-      compl.s <- 100 * complexity(ne.yr.f.c$freq, scale=TRUE)
+    ne.yrs.f <- ne.yrs[which(ne.yrs$firm==firm), ]
+    if(nrow(ne.yrs.f)>0) {
+      activ <- nrow(ne.yrs.f)
+      ne.yrs.f.c <- plyr::count(ne.yrs.f$news_subcategory)
+      compl <- complexity(ne.yrs.f.c$freq)
+      compl.s <- 100 * complexity(ne.yrs.f.c$freq, scale=TRUE)
     } else {
       activ <- 0
       compl <- 0
       compl.s <- 0
     }
-    .tmp <- data.frame(yr=yr, firm=firm, activity=activ, complexity=compl, complexity.scale=compl.s, stringsAsFactors = F)
+    .tmp <- data.frame(yrmin=yrs[1], yrmax=yrs[length(yrs)], firm=firm, 
+                       activity = activ,   activity.ln = log(activ),
+                       complexity = compl, complexity.scale = compl.s, 
+                       stringsAsFactors = F)
     be <- rbind(be, .tmp)
   }
 }
-be$activity_ln <- log(be$activity)
-
-## subset to only observations with at least four actions
-be.na <- be[which(be$activity>0), ]
-## primary relationship
-plot(x=be.na$activity, y=be.na$complexity)
-## scaled relationship
-# be.na$y.hat <- exp(predict(lm(log(complexity.scale) ~ activity, data=be.na), be.na))
-be.na$y.hat <- predict(loess(complexity.scale ~ activity, data=be.na), be.na)
-# be.na$y.hat <- exp(predict(glm(round(complexity.scale) ~ activity, data=be.na, family = poisson(link = "log")), be.na))
-# be.na$y.hat <- exp(predict(glm.nb(round(complexity.scale) ~ activity, data=be.na), be.na))
-be.na <- be.na[order(be.na$activity),]
-plot(x=be.na$activity, y=be.na$complexity.scale)
-lines(be.na$activity, be.na$y.hat, lwd='2', col='steelblue')
-## activity_ln, complexity.scale)
-cor(be.na[,3:6])
-plot(x=be.na$activity_ln, y=be.na$complexity.scale)
-abline(lm(complexity.scale ~ activity_ln, data=be.na))
-
-
-##
-# return integer values for any inputs vectors
-##
-behaviorDV <- function(x, limit=7) {
-  r <- seq(0, limit)
-  p <- r / max(r)
-  q <- quantile(x, probs = p)
-  b <- sapply(x, function(x_i){
-    for (i in 1:length(q)) {
-      q_i <- q[i]
-      if (x_i <= q_i) {
-        return(i-1)
-      }
-    }
-    return(NA)
-  })
-  return(b)
+behavior.cols <- c('activity','activity.ln','complexity','complexity.scale')
+for (col in behavior.cols) {
+  be[,sprintf('%s_orig',col)] <- be[,col]
+  be[,col] <- behaviorDV(be[,col], be[,col])
 }
+
+# ## subset to only observations with at least four actions
+# be.na <- be[which(be$activity>0), ]
+# ## primary relationship
+# plot(x=be.na$activity, y=be.na$complexity)
+# ## scaled relationship
+# # be.na$y.hat <- exp(predict(lm(log(complexity.scale) ~ activity, data=be.na), be.na))
+# be.na$y.hat <- predict(loess(complexity.scale ~ activity, data=be.na), be.na)
+# # be.na$y.hat <- exp(predict(glm(round(complexity.scale) ~ activity, data=be.na, family = poisson(link = "log")), be.na))
+# # be.na$y.hat <- exp(predict(glm.nb(round(complexity.scale) ~ activity, data=be.na), be.na))
+# be.na <- be.na[order(be.na$activity),]
+# plot(x=be.na$activity, y=be.na$complexity.scale)
+# lines(be.na$activity, be.na$y.hat, lwd='2', col='steelblue')
+# ## activity_ln, complexity.scale)
+# cor(be.na[,3:6])
+# plot(x=be.na$activity_ln, y=be.na$complexity.scale)
+# abline(lm(complexity.scale ~ activity_ln, data=be.na))
+
+
+save.image(file=image_file)
+
 
 ##==================================
 ## Pharma Regression 2 DVs
 ##----------------------------------
+# ## convert sum of sales to behavior dv
+# salesSumWaves <- sapply(1:nyrs, function(yr){
+#   rowSums(salesWavesArray[,,yr])
+# })
+# salesSumWaves <- as.data.frame(salesSumWaves)
+# names(salesSumWaves) <- yrs
 
+
+#
 activWaves <- c()
 complWaves <- c()
-for (yr in yrs) {
-  be.yr <- be[which(be$yr==yr), ]
-  activWaves <- c(activWaves, behaviorDV(be.yr$activity) )
-  complWaves <- c(complWaves, behaviorDV(be.yr$complexity.scale) )
+for (k in 1:npds) {
+  yrs <- pdyrs[[k]]
+  be.yr <- be[which(be$yrmin == min(yrs)), ]
+  activWaves <- c(activWaves, be.yr$activity )
+  complWaves <- c(complWaves, be.yr$complexity.scale )
 }
 
-activWavesArray <- array(activWaves, dim=c(nrows, nyrs))
-complWavesArray <- array(complWaves, dim=c(nrows, nyrs))
-  
-depActiv <- sienaDependent(activWavesArray, type="behavior", nodeSet=c('FIRMS'), 
+activWavesArray <- array(activWaves, dim=c(nrows, npds))
+complWavesArray <- array(complWaves, dim=c(nrows, npds))
+salesBehavWaves <- salesWavesArray
+dyadMMCBehavWaves <- dyadMMCWavesArray[,,2:3]
+# dyadFmMMCBehavWaves <- dyadFmMMCWavesArray
+#
+mmcNetWavesArray <- dyadMMCBehavWaves
+.i1 <- which(mmcNetWavesArray > 1)
+.i0 <- which(mmcNetWavesArray <= 1)
+mmcNetWavesArray[.i1] <- 1
+mmcNetWavesArray[.i0] <- 0
+
+#
+FM <- sienaDependent(netWavesArray, type="bipartite", nodeSet=c('FIRMS','MARKETS'), 
                          sparse = FALSE, allowOnly = FALSE)
-depCompl <- sienaDependent(complWavesArray, type="behavior", nodeSet=c('FIRMS'), 
+FF <- sienaDependent(mmcNetWavesArray, type="oneMode", nodeSet=c('FIRMS'),
+                     sparse = FALSE, allowOnly = FALSE)
+
+
+  
+Activ <- sienaDependent(activWavesArray, type="behavior", nodeSet=c('FIRMS'), 
+                         sparse = FALSE, allowOnly = FALSE)
+Compl <- sienaDependent(complWavesArray, type="behavior", nodeSet=c('FIRMS'), 
                              sparse = FALSE, allowOnly = FALSE)
+Sales <- sienaDependent(salesBehavWaves, type="behavior", nodeSet=c('FIRMS'), 
+                           sparse = FALSE, allowOnly = FALSE)
+
+dyadMMC <- varDyadCovar(dyadMMCBehavWaves, centered = T, type = 'oneMode',  nodeSets = c('FIRMS','FIRMS'),
+                        sparse = FALSE)
 
 ##
-pharmaDat <- sienaDataCreate(depMMC, depActiv,    ##dyCovTrt, dyCovTrtLinear, 
+pharmaDat <- sienaDataCreate(FM, Activ, # dyadMMC, # Sales,    ##dyCovTrt, dyCovTrtLinear, 
                              nodeSets=list(FIRMS, MARKETS) ) #,smoke1, alcohol
 #
 pharmaEffects <- getEffects(pharmaDat)
@@ -452,29 +484,38 @@ pharmaEffects <- getEffects(pharmaDat)
 effectsDocumentation(pharmaEffects)
 # print01Report(pharmaDat, modelname="pharma-test-1")
 
-# pharmaEffects <- includeEffects(pharmaEffects, linear, name="depActiv")
-pharmaEffects <- includeEffects(pharmaEffects, outdeg, name="depActiv", interaction1 = 'depMMC')
-pharmaEffects <- includeEffects(pharmaEffects, outRate, name="depActiv", interaction1 = 'depMMC', type='rate')
-# pharmaEffects <- includeEffects(pharmaEffects, isolate, name="depActiv", interaction1 = 'depMMC')
-# pharmaEffects <- includeEffects(pharmaEffects, popAlt, name="depActiv", interaction1 = 'depMMC')
-pharmaEffects <- includeEffects(pharmaEffects, density, name="depMMC")
-# pharmaEffects <- includeEffects(pharmaEffects, inPop, name="depMMC")
-# pharmaEffects <- includeEffects(pharmaEffects, outAct, name="depMMC")
-pharmaEffects <- includeEffects(pharmaEffects, cycle4, name="depMMC")
-pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="depMMC", interaction1 = 'depActiv')
+pharmaEffects <- includeEffects(pharmaEffects, linear, name="Activ")
+pharmaEffects <- includeEffects(pharmaEffects, quad, name="Activ")
+pharmaEffects <- includeEffects(pharmaEffects, outdeg, name="Activ", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, popAlt, name="Activ", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, totInAltDist2, name="Activ", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, totAInAltDist2, name="Activ", interaction1 = 'FM')
+pharmaEffects <- includeTimeDummy(pharmaEffects, totInAltDist2, name="Activ", interaction1 = 'FM', timeDummy = '2')
+pharmaEffects <- includeTimeDummy(pharmaEffects, totAInAltDist2, name="Activ", interaction1 = 'FM', timeDummy = '2')
 #
-pharmaEffects <- includeTimeDummy(pharmaEffects, outdeg, name="depActiv", interaction1 = 'depMMC', timeDummy = '5,6,7,8')
-pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="depMMC", interaction1 = 'depActiv', timeDummy = '5,6,7,8')
-
+# pharmaEffects <- includeEffects(pharmaEffects, outdeg, name="Sales", interaction1 = 'FM')
+# pharmaEffects <- includeEffects(pharmaEffects, outRate, name="Sales", interaction1 = 'FM', type='rate')
+# pharmaEffects <- includeEffects(pharmaEffects, effFrom, name="Sales", interaction1 = 'Activ')
+pharmaEffects <- includeEffects(pharmaEffects, outAct, in2Plus, cycle4, name="FM")
+pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Activ')
+pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Activ', timeDummy = '2',type = 'eval')
 #
-pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-1')
+pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-2many')
 
 pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
-                         batch = T,   returnDeps = T, ## necessary for GOF
-                         useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK')
+                         batch = T,   returnDeps = T #, # necessary for GOF
+                         # useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
+                         )
 
 screenreg(pharmaResults, digits = 4)
+pharmaResults
 
+saveRDS(list(pharmaResults=pharmaResults), file='pharmaResults_mmc_activ_totAInAltDist2.rds')
+
+#
+gofo1f <- sienaGOF(pharmaResults, OutdegreeDistribution, join=TRUE,
+                   varName="FM", verbose = T)
+plot(gofo1f)
 
 ##
 ##

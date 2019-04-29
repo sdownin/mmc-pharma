@@ -27,3 +27,4 @@
 glmmadmb/*
 
 *.ini*
+*.out
