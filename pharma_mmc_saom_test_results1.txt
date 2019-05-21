@@ -1,0 +1,463 @@
+
+=================================================================================
+                                                                    Model 1      
+---------------------------------------------------------------------------------
+constant FM rate (period 1)                                           16.8737 ***
+                                                                      (1.0601)   
+constant FM rate (period 2)                                           12.3404 ***
+                                                                      (0.9240)   
+constant FM rate (period 3)                                           12.7486 ***
+                                                                      (0.8479)   
+constant FM rate (period 4)                                            9.6351 ***
+                                                                      (0.8643)   
+outdegree (density)                                                   -2.4456 ***
+                                                                      (0.1025)   
+4-cycles (1)                                                           0.0068 ***
+                                                                      (0.0003)   
+outdegree - activity                                                  -0.0000    
+                                                                      (0.0004)   
+dyadFmMmc (1)                                                         13.4560 ***
+                                                                      (0.9720)   
+dyadFmMmc (2)                                                         -3.3045 ***
+                                                                      (0.9647)   
+4-cycles (1) same dyadMMCSum                                          -0.0066    
+                                                                      (0.0037)   
+Dummy3:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0288 ** 
+                                                                      (0.0095)   
+int.  Dummy3:FM ego x dyadFmMmc                                        1.0359    
+                                                                      (0.8246)   
+Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0368 ***
+                                                                      (0.0069)   
+int.  Dummy4:FM ego x dyadFmMmc                                        0.1375    
+                                                                      (1.0017)   
+rate Activ (period 1)                                                  1.7116    
+                                                                      (0.9883)   
+rate Activ (period 2)                                                  4.2206 *  
+                                                                      (2.0915)   
+rate Activ (period 3)                                                  0.5580    
+                                                                      (0.2903)   
+rate Activ (period 4)                                                  0.3214    
+                                                                      (0.2620)   
+effect dyadMMCSum on rate Activ                                        0.0764    
+                                                                      (0.0400)   
+effect dyadMMCSumDummy3:Activ on rate                                 -0.0823    
+                                                                      (0.0448)   
+effect dyadMMCSumDummy4:Activ on rate                                 -0.0641    
+                                                                      (0.0673)   
+Activ linear shape                                                    -3.5777    
+                                                                      (2.1314)   
+Activ quadratic shape                                                 -1.0251    
+                                                                      (0.6241)   
+Activ outdegree                                                        0.0252    
+                                                                      (0.0145)   
+Activ tot. in-alt.dist. 2                                              0.0007    
+                                                                      (0.0096)   
+Activ tot. in-alt.dist. 2 x Dummy3:Activ: effect from Dummy3:Activ    -0.0159    
+                                                                      (0.0220)   
+Activ tot. in-alt.dist. 2 x Dummy4:Activ: effect from Dummy4:Activ     0.0130    
+                                                                      (0.0310)   
+Dummy3:Activ: effect from Dummy3:Activ                                 0.0000    
+                                                                                 
+Dummy4:Activ: effect from Dummy4:Activ                                 0.0000    
+                                                                                 
+---------------------------------------------------------------------------------
+Iterations                                                          2552         
+=================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                               Estimate   Standard   Convergence 
+                                                                                            Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                        16.8737  ( 1.0601   )    0.0518   
+   2. rate  constant FM rate (period 2)                                        12.3404  ( 0.9240   )    0.0262   
+   3. rate  constant FM rate (period 3)                                        12.7486  ( 0.8479   )    0.0158   
+   4. rate  constant FM rate (period 4)                                         9.6351  ( 0.8643   )   -0.0275   
+   5. eval  outdegree (density)                                                -2.4456  ( 0.1025   )    0.0328   
+   6. eval  4-cycles (1)                                                        0.0068  ( 0.0003   )    0.0020   
+   7. eval  outdegree - activity                                                0.0000  ( 0.0004   )    0.0129   
+   8. eval  dyadFmMmc                                                          13.4560  ( 0.9720   )    0.0285   
+   9. creat dyadFmMmc                                                          -3.3045  ( 0.9647   )    0.0415   
+  10. eval  4-cycles (1) same dyadMMCSum                                       -0.0066  ( 0.0037   )    0.0314   
+  11. eval  Dummy3:FM ego                                                       0.0000  (     NA   )    1.9494   
+  12. creat Dummy3:FM ego                                                       0.0000  (     NA   )    1.1197   
+  13. eval  Dummy4:FM ego                                                       0.0000  (     NA   )    2.9063   
+  14. creat Dummy4:FM ego                                                       0.0000  (     NA   )    1.6159   
+  15. eval  Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0288  ( 0.0095   )    0.0020   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                     1.0359  ( 0.8246   )   -0.0386   
+  17. eval  Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0368  ( 0.0069   )    0.0034   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                     0.1375  ( 1.0017   )   -0.0137   
+
+Behavior Dynamics
+  19. rate  rate Activ (period 1)                                               1.7116  ( 0.9883   )    0.0149   
+  20. rate  rate Activ (period 2)                                               4.2206  ( 2.0915   )    0.0668   
+  21. rate  rate Activ (period 3)                                               0.5580  ( 0.2903   )    0.0375   
+  22. rate  rate Activ (period 4)                                               0.3214  ( 0.2620   )   -0.0346   
+  23. rate  effect dyadMMCSum on rate Activ                                     0.0764  ( 0.0400   )    0.0709   
+  24. rate  effect dyadMMCSumDummy3:Activ on rate                              -0.0823  ( 0.0448   )   -0.0040   
+  25. rate  effect dyadMMCSumDummy4:Activ on rate                              -0.0641  ( 0.0673   )    0.0266   
+  26. eval  Activ linear shape                                                 -3.5777  ( 2.1314   )   -0.0880   
+  27. eval  Activ quadratic shape                                              -1.0251  ( 0.6241   )   -0.0207   
+  28. eval  Activ outdegree                                                     0.0252  ( 0.0145   )   -0.0930   
+  29. eval  Activ tot. in-alt.dist. 2                                           0.0007  ( 0.0096   )   -0.0787   
+  30. eval  Activ tot. in-alt.dist. 2 x Dummy3:Activ: effect from Dummy3:Activ -0.0159  ( 0.0220   )    0.0422   
+  31. eval  Activ tot. in-alt.dist. 2 x Dummy4:Activ: effect from Dummy4:Activ  0.0130  ( 0.0310   )    0.0852   
+  32. eval  Dummy3:Activ: effect from Dummy3:Activ                              0.0000  (     NA   )   -0.3409   
+  33. eval  Dummy4:Activ: effect from Dummy4:Activ                              0.0000  (     NA   )   -1.1980   
+
+Overall maximum convergence ratio:    0.2350 
+
+
+Total of 2552 iteration steps.
+
+
+
+
+
+
+
+
+
+=================================================================================
+                                                                    Model 1      
+---------------------------------------------------------------------------------
+constant FM rate (period 1)                                           16.7344 ***
+                                                                      (1.3707)   
+constant FM rate (period 2)                                           12.1324 ***
+                                                                      (1.7831)   
+constant FM rate (period 3)                                           12.7452 ***
+                                                                      (1.5685)   
+constant FM rate (period 4)                                            9.5385 ***
+                                                                      (2.5049)   
+outdegree (density)                                                    1.3841 *  
+                                                                      (0.5849)   
+4-cycles (1)                                                           0.0042 ***
+                                                                      (0.0009)   
+outdegree - activity                                                  -0.0115 ***
+                                                                      (0.0024)   
+dyadMMCSum ego                                                         0.0973 ***
+                                                                      (0.0139)   
+4-cycles (1) same dyadMMCSum                                          -0.0078 *  
+                                                                      (0.0034)   
+Dummy3:FM ego                                                          0.0000    
+                                                                                 
+Dummy4:FM ego                                                          0.0000    
+                                                                                 
+int.  dyadMMCSum ego x Dummy3:FM ego                                   0.0039    
+                                                                      (0.0064)   
+int.  dyadMMCSum ego x Dummy4:FM ego                                  -0.0063    
+                                                                      (0.0091)   
+Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0271 *  
+                                                                      (0.0116)   
+Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0319    
+                                                                      (0.0182)   
+rate Activ (period 1)                                                  1.6378    
+                                                                      (1.1384)   
+rate Activ (period 2)                                                  4.2129    
+                                                                     (30.1931)   
+rate Activ (period 3)                                                  0.5784    
+                                                                      (0.4197)   
+rate Activ (period 4)                                                  0.3278    
+                                                                      (0.3961)   
+effect dyadMMCSum on rate Activ                                        0.0734    
+                                                                      (0.2451)   
+effect dyadMMCSumDummy3:Activ on rate                                 -0.0789    
+                                                                      (0.2100)   
+effect dyadMMCSumDummy4:Activ on rate                                 -0.0614    
+                                                                      (0.3779)   
+Activ linear shape                                                    -3.6955    
+                                                                     (10.5087)   
+Activ quadratic shape                                                 -1.0521    
+                                                                      (4.2555)   
+Activ outdegree                                                        0.0259    
+                                                                      (0.0843)   
+Activ tot. in-alt.dist. 2                                              0.0005    
+                                                                      (0.0243)   
+Activ tot. in-alt.dist. 2 x Dummy3:Activ: effect from Dummy3:Activ    -0.0155    
+                                                                      (0.0338)   
+Activ tot. in-alt.dist. 2 x Dummy4:Activ: effect from Dummy4:Activ     0.0121    
+                                                                      (0.0634)   
+Dummy3:Activ: effect from Dummy3:Activ                                 0.0000    
+                                                                                 
+Dummy4:Activ: effect from Dummy4:Activ                                 0.0000    
+                                                                                 
+---------------------------------------------------------------------------------
+Iterations                                                          2483         
+=================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+Warning messages:
+1: In .Internal(lapply(X, FUN)) :
+  closing unused connection 7 (<-devlocal.choco.ly:11020)
+2: In .Internal(lapply(X, FUN)) :
+  closing unused connection 6 (<-devlocal.choco.ly:11020)
+3: In .Internal(lapply(X, FUN)) :
+  closing unused connection 5 (<-devlocal.choco.ly:11020)
+4: In .Internal(lapply(X, FUN)) :
+  closing unused connection 4 (<-devlocal.choco.ly:11020)
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                              Estimate   Standard   Convergence 
+                                                                                           Error      t-ratio   
+Network Dynamics 
+   1. rate constant FM rate (period 1)                                        16.7344  (  1.3707  )   -0.0487   
+   2. rate constant FM rate (period 2)                                        12.1324  (  1.7831  )    0.0497   
+   3. rate constant FM rate (period 3)                                        12.7452  (  1.5685  )   -0.0162   
+   4. rate constant FM rate (period 4)                                         9.5385  (  2.5049  )   -0.1433   
+   5. eval outdegree (density)                                                 1.3841  (  0.5849  )   -0.0586   
+   6. eval 4-cycles (1)                                                        0.0042  (  0.0009  )   -0.0399   
+   7. eval outdegree - activity                                               -0.0115  (  0.0024  )   -0.0252   
+   8. eval dyadMMCSum ego                                                      0.0973  (  0.0139  )   -0.0289   
+   9. eval 4-cycles (1) same dyadMMCSum                                       -0.0078  (  0.0034  )    0.0065   
+  10. eval Dummy3:FM ego                                                       0.0000  (      NA  )    1.7160   
+  11. eval Dummy4:FM ego                                                       0.0000  (      NA  )    2.4904   
+  12. eval int.  dyadMMCSum ego x Dummy3:FM ego                                0.0039  (  0.0064  )   -0.0223   
+  13. eval int.  dyadMMCSum ego x Dummy4:FM ego                               -0.0063  (  0.0091  )   -0.0117   
+  14. eval Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0271  (  0.0116  )    0.0094   
+  15. eval Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0319  (  0.0182  )    0.0166   
+
+Behavior Dynamics
+  16. rate rate Activ (period 1)                                               1.6378  (  1.1384  )   -0.0006   
+  17. rate rate Activ (period 2)                                               4.2129  ( 30.1931  )    0.1397   
+  18. rate rate Activ (period 3)                                               0.5784  (  0.4197  )    0.0309   
+  19. rate rate Activ (period 4)                                               0.3278  (  0.3961  )    0.0347   
+  20. rate effect dyadMMCSum on rate Activ                                     0.0734  (  0.2451  )    0.0329   
+  21. rate effect dyadMMCSumDummy3:Activ on rate                              -0.0789  (  0.2100  )    0.0456   
+  22. rate effect dyadMMCSumDummy4:Activ on rate                              -0.0614  (  0.3779  )   -0.0013   
+  23. eval Activ linear shape                                                 -3.6955  ( 10.5087  )   -0.0564   
+  24. eval Activ quadratic shape                                              -1.0521  (  4.2555  )   -0.0319   
+  25. eval Activ outdegree                                                     0.0259  (  0.0843  )   -0.0744   
+  26. eval Activ tot. in-alt.dist. 2                                           0.0005  (  0.0243  )   -0.0580   
+  27. eval Activ tot. in-alt.dist. 2 x Dummy3:Activ: effect from Dummy3:Activ -0.0155  (  0.0338  )    0.0360   
+  28. eval Activ tot. in-alt.dist. 2 x Dummy4:Activ: effect from Dummy4:Activ  0.0121  (  0.0634  )    0.0840   
+  29. eval Dummy3:Activ: effect from Dummy3:Activ                              0.0000  (      NA  )   -0.3714   
+  30. eval Dummy4:Activ: effect from Dummy4:Activ                              0.0000  (      NA  )   -1.2163   
+
+Overall maximum convergence ratio:    0.4309 
+
+
+Total of 2483 iteration steps.
+
+
+
+======================================================================================
+                                                                         Model 1      
+--------------------------------------------------------------------------------------
+constant FM rate (period 1)                                                17.9490 ***
+                                                                           (1.5032)   
+constant FM rate (period 2)                                                13.7378 ***
+                                                                           (1.0568)   
+outdegree (density)                                                        -1.9216 ***
+                                                                           (0.1693)   
+4-cycles (1)                                                                0.0072 ***
+                                                                           (0.0014)   
+outdegree - activity                                                        0.0029 ***
+                                                                           (0.0006)   
+indegree at least 2                                                        -0.3101 *  
+                                                                           (0.1226)   
+4-cycles (1) same Activ                                                    -0.0119 *  
+                                                                           (0.0047)   
+Dummy2:FM ego                                                               0.0000    
+                                                                                      
+Dummy2:FM ego x 4-cycles (1) same Activ                                    -0.0032    
+                                                                           (0.0040)   
+rate Activ (period 1)                                                       1.8451    
+                                                                           (1.0258)   
+rate Activ (period 2)                                                       2.7450    
+                                                                           (2.2741)   
+Activ linear shape                                                         -1.2956    
+                                                                           (4.2368)   
+Activ quadratic shape                                                      -1.1010    
+                                                                           (4.6454)   
+Activ outdegree                                                             0.0379    
+                                                                           (0.1496)   
+Activ x popularity alter                                                   -0.5879    
+                                                                           (2.7329)   
+Activ tot. in-alt.dist. 2                                                   0.0017    
+                                                                           (0.0496)   
+Activ tot. in-alt. av. dist. 2                                             -0.0193    
+                                                                           (0.2523)   
+Activ tot. in-alt.dist. 2 x Dummy2:Activ: effect from Dummy2:Activ          0.0219    
+                                                                           (0.1270)   
+Activ tot. in-alt. av. dist. 2 x Dummy2:Activ: effect from Dummy2:Activ    -0.0471    
+                                                                           (0.4678)   
+Dummy2:Activ: effect from Dummy2:Activ                                      0.0000    
+                                                                                      
+--------------------------------------------------------------------------------------
+Iterations                                                               3619         
+======================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                                   Estimate   Standard   Convergence 
+                                                                                                Error      t-ratio   
+Network Dynamics 
+   1. rate constant FM rate (period 1)                                             17.9490  ( 1.5032   )    0.0364   
+   2. rate constant FM rate (period 2)                                             13.7378  ( 1.0568   )   -0.0245   
+   3. eval outdegree (density)                                                     -1.9216  ( 0.1693   )   -0.0619   
+   4. eval 4-cycles (1)                                                             0.0072  ( 0.0014   )   -0.0629   
+   5. eval outdegree - activity                                                     0.0029  ( 0.0006   )   -0.0649   
+   6. eval indegree at least 2                                                     -0.3101  ( 0.1226   )   -0.0347   
+   7. eval 4-cycles (1) same Activ                                                 -0.0119  ( 0.0047   )   -0.0490   
+   8. eval Dummy2:FM ego                                                            0.0000  (     NA   )    3.4582   
+   9. eval Dummy2:FM ego x 4-cycles (1) same Activ                                 -0.0032  ( 0.0040   )    0.0264   
+
+Behavior Dynamics
+  10. rate rate Activ (period 1)                                                    1.8451  ( 1.0258   )   -0.1254   
+  11. rate rate Activ (period 2)                                                    2.7450  ( 2.2741   )    0.0035   
+  12. eval Activ linear shape                                                      -1.2956  ( 4.2368   )    0.0714   
+  13. eval Activ quadratic shape                                                   -1.1010  ( 4.6454   )    0.0489   
+  14. eval Activ outdegree                                                          0.0379  ( 0.1496   )    0.0524   
+  15. eval Activ x popularity alter                                                -0.5879  ( 2.7329   )    0.0660   
+  16. eval Activ tot. in-alt.dist. 2                                                0.0017  ( 0.0496   )    0.1087   
+  17. eval Activ tot. in-alt. av. dist. 2                                          -0.0193  ( 0.2523   )    0.1112   
+  18. eval Activ tot. in-alt.dist. 2 x Dummy2:Activ: effect from Dummy2:Activ       0.0219  ( 0.1270   )   -0.1049   
+  19. eval Activ tot. in-alt. av. dist. 2 x Dummy2:Activ: effect from Dummy2:Activ -0.0471  ( 0.4678   )   -0.0662   
+  20. eval Dummy2:Activ: effect from Dummy2:Activ                                   0.0000  (     NA   )   -0.6511   
+
+Overall maximum convergence ratio:    1.1771 
+
+
+Total of 3619 iteration steps.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Estimates, standard errors and convergence t-ratios
+
+                                                                             Estimate   Standard   Convergence 
+                                                                                          Error      t-ratio   
+Network Dynamics 
+   1. rate constant depMMC rate (period 1)                                   10.1787  ( 0.7610   )    0.0146   
+   2. rate constant depMMC rate (period 2)                                    7.2889  ( 0.6352   )   -0.0257   
+   3. rate constant depMMC rate (period 3)                                    7.3803  ( 0.6520   )   -0.0261   
+   4. rate constant depMMC rate (period 4)                                    9.8785  ( 0.7303   )    0.0414   
+   5. rate constant depMMC rate (period 5)                                    4.8326  ( 0.4878   )   -0.0521   
+   6. rate constant depMMC rate (period 6)                                    5.5992  ( 0.5376   )   -0.0344   
+   7. rate constant depMMC rate (period 7)                                    5.8335  ( 0.6296   )    0.0223   
+   8. eval outdegree (density)                                               -1.5636  ( 0.0555   )    0.0233   
+   9. eval 4-cycles (1)                                                       0.0070  ( 0.0006   )    0.0265   
+  10. eval 4-cycles (1) same depActiv                                        -0.0068  ( 0.0026   )    0.0117   
+  11. eval Dummy5:depMMC ego                                                 -0.2849  ( 0.1231   )   -0.0618   
+  12. eval Dummy6:depMMC ego                                                 -0.0321  ( 0.1293   )   -0.0737   
+  13. eval Dummy7:depMMC ego                                                 -0.5822  ( 0.1156   )    0.0510   
+
+Behavior Dynamics
+  14. rate rate depActiv (period 1)                                           0.2977  ( 0.1831   )   -0.0217   
+  15. rate rate depActiv (period 2)                                           1.2857  ( 0.7384   )    0.0018   
+  16. rate rate depActiv (period 3)                                           0.8796  ( 0.4901   )   -0.0792   
+  17. rate rate depActiv (period 4)                                           0.4684  ( 0.2934   )   -0.0242   
+  18. rate rate depActiv (period 5)                                           0.4057  ( 0.2419   )    0.0295   
+  19. rate rate depActiv (period 6)                                           1.0065  ( 0.5661   )    0.0315   
+  20. rate rate depActiv (period 7)                                           0.9512  ( 0.4669   )   -0.0047   
+  21. rate outdegree effect on rate depActiv                                  0.0071  ( 0.0034   )   -0.0424   
+  22. eval depActiv linear shape                                             -0.6596  ( 0.2932   )    0.0567   
+  23. eval depActiv quadratic shape                                          -0.0731  ( 0.0452   )    0.0119   
+  24. eval depActiv outdegree                                                 0.0070  ( 0.0025   )    0.0454   
+  25. eval depActiv outdegree x Dummy5:depActiv: effect from Dummy5:depActiv -0.0012  ( 0.0027   )   -0.0309   
+  26. eval depActiv outdegree x Dummy6:depActiv: effect from Dummy6:depActiv -0.0002  ( 0.0019   )    0.0139   
+  27. eval depActiv outdegree x Dummy7:depActiv: effect from Dummy7:depActiv  0.0004  ( 0.0020   )   -0.0215   
+  28. eval Dummy5:depActiv: effect from Dummy5:depActiv                       0.0000  (     NA   )   -0.4643   
+  29. eval Dummy6:depActiv: effect from Dummy6:depActiv                       0.0000  (     NA   )    0.1434   
+  30. eval Dummy7:depActiv: effect from Dummy7:depActiv                       0.0000  (     NA   )    0.4760   
+
+Overall maximum convergence ratio:    0.1849 
+
+
+Total of 4297 iteration steps.
+
+
+
+
+
+
+
+================================================================================
+                                                                   Model 1      
+--------------------------------------------------------------------------------
+constant depMMC rate (period 1)                                      10.1787 ***
+                                                                     (0.7610)   
+constant depMMC rate (period 2)                                       7.2889 ***
+                                                                     (0.6352)   
+constant depMMC rate (period 3)                                       7.3803 ***
+                                                                     (0.6520)   
+constant depMMC rate (period 4)                                       9.8785 ***
+                                                                     (0.7303)   
+constant depMMC rate (period 5)                                       4.8326 ***
+                                                                     (0.4878)   
+constant depMMC rate (period 6)                                       5.5992 ***
+                                                                     (0.5376)   
+constant depMMC rate (period 7)                                       5.8335 ***
+                                                                     (0.6296)   
+outdegree (density)                                                  -1.5636 ***
+                                                                     (0.0555)   
+4-cycles (1)                                                          0.0070 ***
+                                                                     (0.0006)   
+4-cycles (1) same depActiv                                           -0.0068 ** 
+                                                                     (0.0026)   
+Dummy5:depMMC ego                                                    -0.2849 *  
+                                                                     (0.1231)   
+Dummy6:depMMC ego                                                    -0.0321    
+                                                                     (0.1293)   
+Dummy7:depMMC ego                                                    -0.5822 ***
+                                                                     (0.1156)   
+rate depActiv (period 1)                                              0.2977    
+                                                                     (0.1831)   
+rate depActiv (period 2)                                              1.2857    
+                                                                     (0.7384)   
+rate depActiv (period 3)                                              0.8796    
+                                                                     (0.4901)   
+rate depActiv (period 4)                                              0.4684    
+                                                                     (0.2934)   
+rate depActiv (period 5)                                              0.4057    
+                                                                     (0.2419)   
+rate depActiv (period 6)                                              1.0065    
+                                                                     (0.5661)   
+rate depActiv (period 7)                                              0.9512 *  
+                                                                     (0.4669)   
+outdegree effect on rate depActiv                                     0.0071 *  
+                                                                     (0.0034)   
+depActiv linear shape                                                -0.6596 *  
+                                                                     (0.2932)   
+depActiv quadratic shape                                             -0.0731    
+                                                                     (0.0452)   
+depActiv outdegree                                                    0.0070 ** 
+                                                                     (0.0025)   
+depActiv outdegree x Dummy5:depActiv: effect from Dummy5:depActiv    -0.0012    
+                                                                     (0.0027)   
+depActiv outdegree x Dummy6:depActiv: effect from Dummy6:depActiv    -0.0002    
+                                                                     (0.0019)   
+depActiv outdegree x Dummy7:depActiv: effect from Dummy7:depActiv     0.0004    
+                                                                     (0.0020)   
+Dummy5:depActiv: effect from Dummy5:depActiv                          0.0000    
+                                                                                
+Dummy6:depActiv: effect from Dummy6:depActiv                          0.0000    
+                                                                                
+Dummy7:depActiv: effect from Dummy7:depActiv                          0.0000    
+                                                                                
+--------------------------------------------------------------------------------
+Iterations                                                         4297         
+================================================================================
+

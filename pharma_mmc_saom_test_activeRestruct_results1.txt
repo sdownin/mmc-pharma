@@ -1,0 +1,248 @@
+
+=========================================================================================================
+                                                                                            Model 1      
+---------------------------------------------------------------------------------------------------------
+constant FM rate (period 1)                                                                   16.8368 ***
+                                                                                              (1.0724)   
+constant FM rate (period 2)                                                                   12.3982 ***
+                                                                                              (0.9987)   
+constant FM rate (period 3)                                                                   12.7399 ***
+                                                                                              (2.0990)   
+constant FM rate (period 4)                                                                    9.6680 ***
+                                                                                              (2.2559)   
+outdegree (density)                                                                           -2.3919 ***
+                                                                                              (0.1755)   
+4-cycles (1)                                                                                   0.0056 ***
+                                                                                              (0.0009)   
+outdegree - activity                                                                          -0.0001    
+                                                                                              (0.0007)   
+dyadFmMmc (1)                                                                                 13.3853 ***
+                                                                                              (1.6928)   
+dyadFmMmc (2)                                                                                 -3.2801 *  
+                                                                                              (1.4937)   
+4-cycles (1) same ActivRestruct                                                                0.0049    
+                                                                                              (0.0039)   
+Dummy3:FM ego (1)                                                                              0.0000    
+                                                                                                         
+Dummy3:FM ego (2)                                                                              0.0000    
+                                                                                                         
+Dummy4:FM ego (1)                                                                              0.0000    
+                                                                                                         
+Dummy4:FM ego (2)                                                                              0.0000    
+                                                                                                         
+Dummy3:FM ego x 4-cycles (1) same ActivRestruct                                               -0.0008    
+                                                                                              (0.0040)   
+int.  Dummy3:FM ego x dyadFmMmc                                                                0.9877    
+                                                                                              (1.1720)   
+Dummy4:FM ego x 4-cycles (1) same ActivRestruct                                               -0.0026    
+                                                                                              (0.0038)   
+int.  Dummy4:FM ego x dyadFmMmc                                                               -0.0150    
+                                                                                              (1.8014)   
+rate ActivRestruct (period 1)                                                                  0.0699    
+                                                                                              (0.0976)   
+rate ActivRestruct (period 2)                                                                  0.8048    
+                                                                                              (0.6731)   
+rate ActivRestruct (period 3)                                                                  0.9470    
+                                                                                              (1.5103)   
+rate ActivRestruct (period 4)                                                                  0.2079    
+                                                                                              (0.7615)   
+effect ActivRestruct on rate ActivRestruct                                                     0.6775    
+                                                                                              (0.4525)   
+effect ActivRestructDummy3:ActivRestruct on rate                                              -0.6283    
+                                                                                              (0.7044)   
+effect ActivRestructDummy4:ActivRestruct on rate                                              -0.5469    
+                                                                                              (0.5389)   
+ActivRestruct linear shape                                                                    -0.8653    
+                                                                                              (0.8095)   
+ActivRestruct quadratic shape                                                                 -0.2102 *  
+                                                                                              (0.0888)   
+ActivRestruct outdegree                                                                        0.0093    
+                                                                                              (0.0051)   
+ActivRestruct tot. in-alt.dist. 2                                                              0.0005    
+                                                                                              (0.0015)   
+ActivRestruct tot. in-alt.dist. 2 x Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct     0.0003    
+                                                                                              (0.0028)   
+ActivRestruct tot. in-alt.dist. 2 x Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct     0.0024    
+                                                                                              (0.0047)   
+Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct                                         0.0000    
+                                                                                                         
+Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct                                         0.0000    
+                                                                                                         
+---------------------------------------------------------------------------------------------------------
+Iterations                                                                                  2444         
+=========================================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                                                       Estimate   Standard   Convergence 
+                                                                                                                    Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                                                16.8368  ( 1.0724   )   -0.0338   
+   2. rate  constant FM rate (period 2)                                                                12.3982  ( 0.9987   )    0.0823   
+   3. rate  constant FM rate (period 3)                                                                12.7399  ( 2.0990   )    0.0276   
+   4. rate  constant FM rate (period 4)                                                                 9.6680  ( 2.2559   )   -0.0118   
+   5. eval  outdegree (density)                                                                        -2.3919  ( 0.1755   )   -0.0145   
+   6. eval  4-cycles (1)                                                                                0.0056  ( 0.0009   )   -0.0172   
+   7. eval  outdegree - activity                                                                       -0.0001  ( 0.0007   )   -0.0208   
+   8. eval  dyadFmMmc                                                                                  13.3853  ( 1.6928   )   -0.0170   
+   9. creat dyadFmMmc                                                                                  -3.2801  ( 1.4937   )   -0.0246   
+  10. eval  4-cycles (1) same ActivRestruct                                                             0.0049  ( 0.0039   )   -0.0041   
+  11. eval  Dummy3:FM ego                                                                               0.0000  (     NA   )    2.0079   
+  12. creat Dummy3:FM ego                                                                               0.0000  (     NA   )    1.2208   
+  13. eval  Dummy4:FM ego                                                                               0.0000  (     NA   )    3.2537   
+  14. creat Dummy4:FM ego                                                                               0.0000  (     NA   )    1.9025   
+  15. eval  Dummy3:FM ego x 4-cycles (1) same ActivRestruct                                            -0.0008  ( 0.0040   )   -0.0330   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                                             0.9877  ( 1.1720   )   -0.0050   
+  17. eval  Dummy4:FM ego x 4-cycles (1) same ActivRestruct                                            -0.0026  ( 0.0038   )    0.0049   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                                            -0.0150  ( 1.8014   )    0.0008   
+
+Behavior Dynamics
+  19. rate  rate ActivRestruct (period 1)                                                               0.0699  ( 0.0976   )    0.0160   
+  20. rate  rate ActivRestruct (period 2)                                                               0.8048  ( 0.6731   )    0.0213   
+  21. rate  rate ActivRestruct (period 3)                                                               0.9470  ( 1.5103   )    0.0629   
+  22. rate  rate ActivRestruct (period 4)                                                               0.2079  ( 0.7615   )    0.0104   
+  23. rate  effect ActivRestruct on rate ActivRestruct                                                  0.6775  ( 0.4525   )    0.0274   
+  24. rate  effect ActivRestructDummy3:ActivRestruct on rate                                           -0.6283  ( 0.7044   )    0.0477   
+  25. rate  effect ActivRestructDummy4:ActivRestruct on rate                                           -0.5469  ( 0.5389   )    0.0073   
+  26. eval  ActivRestruct linear shape                                                                 -0.8653  ( 0.8095   )   -0.0148   
+  27. eval  ActivRestruct quadratic shape                                                              -0.2102  ( 0.0888   )    0.0127   
+  28. eval  ActivRestruct outdegree                                                                     0.0093  ( 0.0051   )   -0.0071   
+  29. eval  ActivRestruct tot. in-alt.dist. 2                                                           0.0005  ( 0.0015   )   -0.0255   
+  30. eval  ActivRestruct tot. in-alt.dist. 2 x Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct  0.0003  ( 0.0028   )    0.0127   
+  31. eval  ActivRestruct tot. in-alt.dist. 2 x Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct  0.0024  ( 0.0047   )    0.0013   
+  32. eval  Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct                                      0.0000  (     NA   )   -0.6662   
+  33. eval  Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct                                      0.0000  (     NA   )   -0.0183   
+
+Overall maximum convergence ratio:    0.2163 
+
+
+Total of 2444 iteration steps.
+
+
+
+
+
+
+
+
+ =========================================================================================================
+                                                                                            Model 1      
+---------------------------------------------------------------------------------------------------------
+constant FM rate (period 1)                                                                   16.8616 ***
+                                                                                              (1.1530)   
+constant FM rate (period 2)                                                                   12.4220 ***
+                                                                                              (0.9330)   
+constant FM rate (period 3)                                                                   12.7244 ***
+                                                                                              (3.2992)   
+constant FM rate (period 4)                                                                    9.6454 ** 
+                                                                                              (3.4702)   
+outdegree (density)                                                                           -2.3919 ***
+                                                                                              (0.1116)   
+4-cycles (1)                                                                                   0.0056 ***
+                                                                                              (0.0009)   
+outdegree - activity                                                                          -0.0001    
+                                                                                              (0.0006)   
+dyadFmMmc (1)                                                                                 13.2935 ***
+                                                                                              (1.4193)   
+dyadFmMmc (2)                                                                                 -3.1805    
+                                                                                              (2.1000)   
+4-cycles (1) same ActivRestruct                                                                0.0046    
+                                                                                              (0.0041)   
+Dummy3:FM ego (1)                                                                              0.0000    
+                                                                                                         
+Dummy3:FM ego (2)                                                                              0.0000    
+                                                                                                         
+Dummy4:FM ego (1)                                                                              0.0000    
+                                                                                                         
+Dummy4:FM ego (2)                                                                              0.0000    
+                                                                                                         
+Dummy3:FM ego x 4-cycles (1) same ActivRestruct                                               -0.0007    
+                                                                                              (0.0110)   
+int.  Dummy3:FM ego x dyadFmMmc                                                                1.0498    
+                                                                                              (1.5271)   
+Dummy4:FM ego x 4-cycles (1) same ActivRestruct                                               -0.0024    
+                                                                                              (0.0118)   
+int.  Dummy4:FM ego x dyadFmMmc                                                                0.0464    
+                                                                                              (1.4966)   
+--------------------------------------------------------------------------------------------------------
+rate ActivRestruct (period 1)                                                                  0.1129    
+                                                                                              (0.3038)   
+rate ActivRestruct (period 2)                                                                  1.0393    
+                                                                                              (3.3267)   
+rate ActivRestruct (period 3)                                                                  1.1730    
+                                                                                              (1.1320)   
+rate ActivRestruct (period 4)                                                                  0.2266    
+                                                                                              (0.2629)   
+effect ActivRestruct on rate ActivRestruct                                                     0.5802    
+                                                                                              (0.6118)   
+effect ActivRestructDummy3:ActivRestruct on rate                                              -0.5704    
+                                                                                              (0.8540)   
+effect ActivRestructDummy4:ActivRestruct on rate                                              -0.4408    
+                                                                                              (0.8134)   
+ActivRestruct linear shape                                                                    -0.9726    
+                                                                                              (1.0467)   
+ActivRestruct quadratic shape                                                                 -0.2244    
+                                                                                              (0.1934)   
+ActivRestruct outdegree                                                                        0.0097    
+                                                                                              (0.0069)   
+ActivRestruct tot. in-alt.dist. 2                                                              0.0006    
+                                                                                              (0.0031)   
+ActivRestruct tot. in-alt.dist. 2 x Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct     0.0005    
+                                                                                              (0.0063)   
+ActivRestruct tot. in-alt.dist. 2 x Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct     0.0030    
+                                                                                              (0.0068)   
+Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct                                         0.0000    
+                                                                                                         
+Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct                                         0.0000    
+                                                                                                         
+---------------------------------------------------------------------------------------------------------
+Iterations                                                                                  2604         
+=========================================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                                                       Estimate   Standard   Convergence 
+                                                                                                                    Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                                                16.8616  ( 1.1530   )   -0.0408   
+   2. rate  constant FM rate (period 2)                                                                12.4220  ( 0.9330   )    0.0902   
+   3. rate  constant FM rate (period 3)                                                                12.7244  ( 3.2992   )   -0.0396   
+   4. rate  constant FM rate (period 4)                                                                 9.6454  ( 3.4702   )   -0.0816   
+   5. eval  outdegree (density)                                                                        -2.3919  ( 0.1116   )   -0.0489   
+   6. eval  4-cycles (1)                                                                                0.0056  ( 0.0009   )   -0.0156   
+   7. eval  outdegree - activity                                                                       -0.0001  ( 0.0006   )   -0.0766   
+   8. eval  dyadFmMmc                                                                                  13.2935  ( 1.4193   )   -0.1165   
+   9. creat dyadFmMmc                                                                                  -3.1805  ( 2.1000   )   -0.0912   
+  10. eval  4-cycles (1) same ActivRestruct                                                             0.0046  ( 0.0041   )   -0.0481   
+  11. eval  Dummy3:FM ego                                                                               0.0000  (     NA   )    2.1370   
+  12. creat Dummy3:FM ego                                                                               0.0000  (     NA   )    1.2548   
+  13. eval  Dummy4:FM ego                                                                               0.0000  (     NA   )    3.2486   
+  14. creat Dummy4:FM ego                                                                               0.0000  (     NA   )    1.9215   
+  15. eval  Dummy3:FM ego x 4-cycles (1) same ActivRestruct                                            -0.0007  ( 0.0110   )    0.0070   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                                             1.0498  ( 1.5271   )    0.0321   
+  17. eval  Dummy4:FM ego x 4-cycles (1) same ActivRestruct                                            -0.0024  ( 0.0118   )    0.0235   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                                             0.0464  ( 1.4966   )   -0.0180   
+
+Behavior Dynamics
+  19. rate  rate ActivRestruct (period 1)                                                               0.1129  ( 0.3038   )    0.2972   
+  20. rate  rate ActivRestruct (period 2)                                                               1.0393  ( 3.3267   )    0.0465   
+  21. rate  rate ActivRestruct (period 3)                                                               1.1730  ( 1.1320   )    0.0624   
+  22. rate  rate ActivRestruct (period 4)                                                               0.2266  ( 0.2629   )    0.0350   
+  23. rate  effect ActivRestruct on rate ActivRestruct                                                  0.5802  ( 0.6118   )    0.1433   
+  24. rate  effect ActivRestructDummy3:ActivRestruct on rate                                           -0.5704  ( 0.8540   )   -0.0662   
+  25. rate  effect ActivRestructDummy4:ActivRestruct on rate                                           -0.4408  ( 0.8134   )   -0.0163   
+  26. eval  ActivRestruct linear shape                                                                 -0.9726  ( 1.0467   )   -0.0819   
+  27. eval  ActivRestruct quadratic shape                                                              -0.2244  ( 0.1934   )   -0.1387   
+  28. eval  ActivRestruct outdegree                                                                     0.0097  ( 0.0069   )   -0.1235   
+  29. eval  ActivRestruct tot. in-alt.dist. 2                                                           0.0006  ( 0.0031   )   -0.0520   
+  30. eval  ActivRestruct tot. in-alt.dist. 2 x Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct  0.0005  ( 0.0063   )    0.0982   
+  31. eval  ActivRestruct tot. in-alt.dist. 2 x Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct  0.0030  ( 0.0068   )    0.0978   
+  32. eval  Dummy3:ActivRestruct: effect from Dummy3:ActivRestruct                                      0.0000  (     NA   )   -0.5878   
+  33. eval  Dummy4:ActivRestruct: effect from Dummy4:ActivRestruct                                      0.0000  (     NA   )    0.1222   
+
+Overall maximum convergence ratio:    0.5486 
+
+
+Total of 2604 iteration steps.

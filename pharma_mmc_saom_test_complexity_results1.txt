@@ -1,0 +1,403 @@
+
+=================================================================================
+                                                                    Model 1      
+---------------------------------------------------------------------------------
+constant FM rate (period 1)                                           16.9091 ***
+                                                                      (1.0681)   
+constant FM rate (period 2)                                           12.3954 ***
+                                                                      (0.8433)   
+constant FM rate (period 3)                                           12.7202 ***
+                                                                      (0.8552)   
+constant FM rate (period 4)                                            9.5833 ***
+                                                                      (0.7929)   
+outdegree (density)                                                   -2.4873 ***
+                                                                      (0.1118)   
+4-cycles (1)                                                           0.0065 ***
+                                                                      (0.0009)   
+outdegree - activity                                                   0.0002    
+                                                                      (0.0004)   
+dyadFmMmc (1)                                                         13.5902 ***
+                                                                      (0.9137)   
+dyadFmMmc (2)                                                         -3.2388 ** 
+                                                                      (0.9874)   
+4-cycles (1) same Compl                                                0.0016    
+                                                                      (0.0031)   
+Dummy3:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (2)                                                      0.0000    
+                                                                                 
+int.  Dummy3:FM ego x 4-cycles (1)                                     0.0021    
+                                                                      (0.0014)   
+int.  Dummy3:FM ego x dyadFmMmc                                        1.3383    
+                                                                      (0.8021)   
+int.  Dummy4:FM ego x 4-cycles (1)                                    -0.0060 *  
+                                                                      (0.0027)   
+int.  Dummy4:FM ego x dyadFmMmc                                        0.9613    
+                                                                      (1.2419)   
+Dummy3:FM ego x 4-cycles (1) same Compl                               -0.0075 *  
+                                                                      (0.0034)   
+Dummy4:FM ego x 4-cycles (1) same Compl                                0.0181    
+                                                                      (0.0116)   
+rate Compl (period 1)                                                  1.1630 *  
+                                                                      (0.4816)   
+rate Compl (period 2)                                                  2.2512 ** 
+                                                                      (0.7509)   
+rate Compl (period 3)                                                  0.3831    
+                                                                      (0.2229)   
+rate Compl (period 4)                                                  1.1825 *  
+                                                                      (0.4814)   
+effect dyadMMCSum on rate Compl                                       -0.0255    
+                                                                      (0.0151)   
+effect dyadMMCSumDummy3:Compl on rate                                 -0.0271    
+                                                                      (0.0318)   
+effect dyadMMCSumDummy4:Compl on rate                                  0.0406    
+                                                                      (0.0267)   
+Compl linear shape                                                     0.2272    
+                                                                      (0.3263)   
+Compl quadratic shape                                                 -0.0418    
+                                                                      (0.0629)   
+Compl outdegree                                                        0.0020    
+                                                                      (0.0032)   
+Compl tot. in-alt.dist. 2                                             -0.0035    
+                                                                      (0.0050)   
+Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl    -0.0130    
+                                                                      (0.0201)   
+Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl    -0.0028    
+                                                                      (0.0028)   
+Dummy3:Compl: effect from Dummy3:Compl                                 0.0000    
+                                                                                 
+Dummy4:Compl: effect from Dummy4:Compl                                 0.0000    
+                                                                                 
+---------------------------------------------------------------------------------
+Iterations                                                          2626         
+=================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                               Estimate   Standard   Convergence 
+                                                                                            Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                        16.9091  ( 1.0681   )    0.0203   
+   2. rate  constant FM rate (period 2)                                        12.3954  ( 0.8433   )   -0.0280   
+   3. rate  constant FM rate (period 3)                                        12.7202  ( 0.8552   )   -0.0264   
+   4. rate  constant FM rate (period 4)                                         9.5833  ( 0.7929   )   -0.0586   
+   5. eval  outdegree (density)                                                -2.4873  ( 0.1118   )   -0.0412   
+   6. eval  4-cycles (1)                                                        0.0065  ( 0.0009   )   -0.0595   
+   7. eval  outdegree - activity                                                0.0002  ( 0.0004   )   -0.0654   
+   8. eval  dyadFmMmc                                                          13.5902  ( 0.9137   )   -0.0572   
+   9. creat dyadFmMmc                                                          -3.2388  ( 0.9874   )   -0.0558   
+  10. eval  4-cycles (1) same Compl                                             0.0016  ( 0.0031   )   -0.0597   
+  11. eval  Dummy3:FM ego                                                       0.0000  (     NA   )    2.1759   
+  12. creat Dummy3:FM ego                                                       0.0000  (     NA   )    1.3423   
+  13. eval  Dummy4:FM ego                                                       0.0000  (     NA   )    1.7683   
+  14. creat Dummy4:FM ego                                                       0.0000  (     NA   )    1.1365   
+  15. eval  int.  Dummy3:FM ego x 4-cycles (1)                                  0.0021  ( 0.0014   )   -0.0018   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                     1.3383  ( 0.8021   )   -0.0495   
+  17. eval  int.  Dummy4:FM ego x 4-cycles (1)                                 -0.0060  ( 0.0027   )   -0.0121   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                     0.9613  ( 1.2419   )    0.0052   
+  19. eval  Dummy3:FM ego x 4-cycles (1) same Compl                            -0.0075  ( 0.0034   )    0.0001   
+  20. eval  Dummy4:FM ego x 4-cycles (1) same Compl                             0.0181  ( 0.0116   )    0.0199   
+
+Behavior Dynamics
+  21. rate  rate Compl (period 1)                                               1.1630  ( 0.4816   )    0.0169   
+  22. rate  rate Compl (period 2)                                               2.2512  ( 0.7509   )   -0.0110   
+  23. rate  rate Compl (period 3)                                               0.3831  ( 0.2229   )    0.0368   
+  24. rate  rate Compl (period 4)                                               1.1825  ( 0.4814   )    0.0494   
+  25. rate  effect dyadMMCSum on rate Compl                                    -0.0255  ( 0.0151   )   -0.0046   
+  26. rate  effect dyadMMCSumDummy3:Compl on rate                              -0.0271  ( 0.0318   )    0.0302   
+  27. rate  effect dyadMMCSumDummy4:Compl on rate                               0.0406  ( 0.0267   )    0.0252   
+  28. eval  Compl linear shape                                                  0.2272  ( 0.3263   )   -0.0352   
+  29. eval  Compl quadratic shape                                              -0.0418  ( 0.0629   )   -0.0385   
+  30. eval  Compl outdegree                                                     0.0020  ( 0.0032   )   -0.0465   
+  31. eval  Compl tot. in-alt.dist. 2                                          -0.0035  ( 0.0050   )   -0.0586   
+  32. eval  Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl -0.0130  ( 0.0201   )   -0.0150   
+  33. eval  Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl -0.0028  ( 0.0028   )    0.0011   
+  34. eval  Dummy3:Compl: effect from Dummy3:Compl                              0.0000  (     NA   )    0.9815   
+  35. eval  Dummy4:Compl: effect from Dummy4:Compl                              0.0000  (     NA   )    1.6270   
+
+Overall maximum convergence ratio:    0.2178 
+
+
+Total of 2626 iteration steps.
+
+
+
+
+
+
+
+
+
+COMPLEXITY in 4cycles   [EMAIL]
+
+
+=================================================================================
+                                                                    Model 1      
+---------------------------------------------------------------------------------
+constant FM rate (period 1)                                           16.8811 ***
+                                                                      (1.0252)   
+constant FM rate (period 2)                                           12.3719 ***
+                                                                      (0.9361)   
+constant FM rate (period 3)                                           12.7590 ***
+                                                                      (0.9298)   
+constant FM rate (period 4)                                            9.6352 ***
+                                                                      (0.7432)   
+outdegree (density)                                                   -2.4736 ***
+                                                                      (0.0983)   
+4-cycles (1)                                                           0.0070 ***
+                                                                      (0.0006)   
+outdegree - activity                                                   0.0001    
+                                                                      (0.0004)   
+dyadFmMmc (1)                                                         13.4225 ***
+                                                                      (0.8784)   
+dyadFmMmc (2)                                                         -3.3324 ***
+                                                                      (0.9495)   
+4-cycles (1) same Compl                                               -0.0012    
+                                                                      (0.0015)   
+Dummy3:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego x 4-cycles (1) same Compl                               -0.0027 *  
+                                                                      (0.0012)   
+int.  Dummy3:FM ego x dyadFmMmc                                        1.0144    
+                                                                      (0.8021)   
+Dummy4:FM ego x 4-cycles (1) same Compl                               -0.0019    
+                                                                      (0.0019)   
+int.  Dummy4:FM ego x dyadFmMmc                                        0.1220    
+                                                                      (0.8103)   
+rate Compl (period 1)                                                  1.1636 *  
+                                                                      (0.4623)   
+rate Compl (period 2)                                                  2.2783 ** 
+                                                                      (0.7461)   
+rate Compl (period 3)                                                  0.3899    
+                                                                      (0.2215)   
+rate Compl (period 4)                                                  1.1746 *  
+                                                                      (0.4818)   
+effect dyadMMCSum on rate Compl                                       -0.0256    
+                                                                      (0.0173)   
+effect dyadMMCSumDummy3:Compl on rate                                 -0.0272    
+                                                                      (0.0304)   
+effect dyadMMCSumDummy4:Compl on rate                                  0.0401    
+                                                                      (0.0230)   
+Compl linear shape                                                     0.2093    
+                                                                      (0.3513)   
+Compl quadratic shape                                                 -0.0396    
+                                                                      (0.0687)   
+Compl outdegree                                                        0.0022    
+                                                                      (0.0033)   
+Compl tot. in-alt.dist. 2                                             -0.0033    
+                                                                      (0.0044)   
+Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl    -0.0123    
+                                                                      (0.0178)   
+Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl    -0.0028    
+                                                                      (0.0026)   
+Dummy3:Compl: effect from Dummy3:Compl                                 0.0000    
+                                                                                 
+Dummy4:Compl: effect from Dummy4:Compl                                 0.0000    
+                                                                                 
+---------------------------------------------------------------------------------
+Iterations                                                          2552         
+=================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                               Estimate   Standard   Convergence 
+                                                                                            Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                        16.8811  ( 1.0252   )   -0.0120   
+   2. rate  constant FM rate (period 2)                                        12.3719  ( 0.9361   )   -0.0617   
+   3. rate  constant FM rate (period 3)                                        12.7590  ( 0.9298   )   -0.0288   
+   4. rate  constant FM rate (period 4)                                         9.6352  ( 0.7432   )    0.0269   
+   5. eval  outdegree (density)                                                -2.4736  ( 0.0983   )    0.0380   
+   6. eval  4-cycles (1)                                                        0.0070  ( 0.0006   )    0.0074   
+   7. eval  outdegree - activity                                                0.0001  ( 0.0004   )   -0.0022   
+   8. eval  dyadFmMmc                                                          13.4225  ( 0.8784   )    0.0676   
+   9. creat dyadFmMmc                                                          -3.3324  ( 0.9495   )    0.0577   
+  10. eval  4-cycles (1) same Compl                                            -0.0012  ( 0.0015   )    0.0092   
+  11. eval  Dummy3:FM ego                                                       0.0000  (     NA   )    1.1822   
+  12. creat Dummy3:FM ego                                                       0.0000  (     NA   )    0.7105   
+  13. eval  Dummy4:FM ego                                                       0.0000  (     NA   )    3.7492   
+  14. creat Dummy4:FM ego                                                       0.0000  (     NA   )    2.1926   
+  15. eval  Dummy3:FM ego x 4-cycles (1) same Compl                            -0.0027  ( 0.0012   )    0.0121   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                     1.0144  ( 0.8021   )    0.0156   
+  17. eval  Dummy4:FM ego x 4-cycles (1) same Compl                            -0.0019  ( 0.0019   )   -0.0082   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                     0.1220  ( 0.8103   )    0.0306   
+
+Behavior Dynamics
+  19. rate  rate Compl (period 1)                                               1.1636  ( 0.4623   )   -0.0226   
+  20. rate  rate Compl (period 2)                                               2.2783  ( 0.7461   )    0.0044   
+  21. rate  rate Compl (period 3)                                               0.3899  ( 0.2215   )    0.0609   
+  22. rate  rate Compl (period 4)                                               1.1746  ( 0.4818   )   -0.0932   
+  23. rate  effect dyadMMCSum on rate Compl                                    -0.0256  ( 0.0173   )   -0.0113   
+  24. rate  effect dyadMMCSumDummy3:Compl on rate                              -0.0272  ( 0.0304   )   -0.0811   
+  25. rate  effect dyadMMCSumDummy4:Compl on rate                               0.0401  ( 0.0230   )   -0.0182   
+  26. eval  Compl linear shape                                                  0.2093  ( 0.3513   )    0.0103   
+  27. eval  Compl quadratic shape                                              -0.0396  ( 0.0687   )   -0.0252   
+  28. eval  Compl outdegree                                                     0.0022  ( 0.0033   )    0.0157   
+  29. eval  Compl tot. in-alt.dist. 2                                          -0.0033  ( 0.0044   )   -0.0099   
+  30. eval  Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl -0.0123  ( 0.0178   )    0.0031   
+  31. eval  Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl -0.0028  ( 0.0026   )    0.0223   
+  32. eval  Dummy3:Compl: effect from Dummy3:Compl                              0.0000  (     NA   )    1.0664   
+  33. eval  Dummy4:Compl: effect from Dummy4:Compl                              0.0000  (     NA   )    1.5681   
+
+Overall maximum convergence ratio:    0.2140 
+
+
+Total of 2552 iteration steps. 
+
+
+
+
+
+MMC --> FM(MMC)
+  (+)  4cycle
+  (ns) 4-cycles (1) same dyadMMCSum
+  (+)  dyadFmMmc (1)
+  (-)  dyadFmMmc (2) creation
+  (ns) int.  Dummy(t):FM ego x dyadFmMmc
+  (-)  Dummy(t):FM ego x 4-cycles (1) same dyadMMCSum
+  
+MMC --> Competition
+  (ns) effect dyadMMCSum on rate Compl
+  (ns) Compl tot. in-alt.dist. 2
+  (ns) Compl tot. in-alt.dist. 2 x Dummy(t):Compl: effect from Dummy(t):Compl
+
+Competition --> FM(MMC)
+  (ns) outdegree - activity 
+   ??  4-cycles (1) same Compl
+
+=================================================================================
+                                                                    Model 1      
+---------------------------------------------------------------------------------
+DV:  Firm-Market Network 
+
+constant FM rate (period 1)                                           16.8889 ***
+                                                                      (0.9877)   
+constant FM rate (period 2)                                           12.3327 ***
+                                                                      (0.8807)   
+constant FM rate (period 3)                                           12.7516 ***
+                                                                      (0.8862)   
+constant FM rate (period 4)                                            9.6639 ***
+                                                                      (0.7491)   
+outdegree (density)                                                   -2.4466 ***
+                                                                      (0.1014)   
+4-cycles (1)                                                           0.0068 ***
+                                                                      (0.0003)   
+outdegree - activity                                                  -0.0000    
+                                                                      (0.0004)   
+dyadFmMmc (1)                                                         13.5285 ***
+                                                                      (0.9045)   
+dyadFmMmc (2)                                                         -3.3952 ***
+                                                                      (0.9677)   
+4-cycles (1) same dyadMMCSum                                          -0.0066    
+                                                                      (0.0035)   
+Dummy3:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (1)                                                      0.0000    
+                                                                                 
+Dummy4:FM ego (2)                                                      0.0000    
+                                                                                 
+Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0287 ** 
+                                                                      (0.0092)   
+int.  Dummy3:FM ego x dyadFmMmc                                        1.0571    
+                                                                      (0.7890)   
+Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                          -0.0367 ***
+                                                                      (0.0068)   
+int.  Dummy4:FM ego x dyadFmMmc                                        0.0919    
+                                                                      (0.8619)
+---------------------------------------------------------------------------------	
+DV:  Complexity (Competitive Agressivness)	
+															  
+rate Compl (period 1)                                                  1.1725 *  
+                                                                      (0.4725)   
+rate Compl (period 2)                                                  2.2909 ** 
+                                                                      (0.8582)   
+rate Compl (period 3)                                                  0.3880    
+                                                                      (0.2188)   
+rate Compl (period 4)                                                  1.1809 *  
+                                                                      (0.4693)   
+effect dyadMMCSum on rate Compl                                       -0.0257    
+                                                                      (0.0147)   
+effect dyadMMCSumDummy3:Compl on rate                                 -0.0274    
+                                                                      (0.0331)   
+effect dyadMMCSumDummy4:Compl on rate                                  0.0403    
+                                                                      (0.0255)   
+Compl linear shape                                                     0.2112    
+                                                                      (0.3332)   
+Compl quadratic shape                                                 -0.0402    
+                                                                      (0.0716)   
+Compl outdegree                                                        0.0021    
+                                                                      (0.0031)   
+Compl tot. in-alt.dist. 2                                             -0.0033    
+                                                                      (0.0050)   
+Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl    -0.0124    
+                                                                      (0.0198)   
+Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl    -0.0028    
+                                                                      (0.0024)   
+Dummy3:Compl: effect from Dummy3:Compl                                 0.0000    
+                                                                                 
+Dummy4:Compl: effect from Dummy4:Compl                                 0.0000    
+                                                                                 
+---------------------------------------------------------------------------------
+Iterations                                                          2552         
+=================================================================================
+*** p < 0.001, ** p < 0.01, * p < 0.05
+> pharmaResults
+Estimates, standard errors and convergence t-ratios
+
+                                                                               Estimate   Standard   Convergence 
+                                                                                            Error      t-ratio   
+Network Dynamics 
+   1. rate  constant FM rate (period 1)                                        16.8889  ( 0.9877   )    0.0224   
+   2. rate  constant FM rate (period 2)                                        12.3327  ( 0.8807   )   -0.0591   
+   3. rate  constant FM rate (period 3)                                        12.7516  ( 0.8862   )    0.0081   
+   4. rate  constant FM rate (period 4)                                         9.6639  ( 0.7491   )   -0.0050   
+   5. eval  outdegree (density)                                                -2.4466  ( 0.1014   )    0.0114   
+   6. eval  4-cycles (1)                                                        0.0068  ( 0.0003   )    0.0011   
+   7. eval  outdegree - activity                                                0.0000  ( 0.0004   )   -0.0066   
+   8. eval  dyadFmMmc                                                          13.5285  ( 0.9045   )    0.0410   
+   9. creat dyadFmMmc                                                          -3.3952  ( 0.9677   )    0.0202   
+  10. eval  4-cycles (1) same dyadMMCSum                                       -0.0066  ( 0.0035   )    0.0424   
+  11. eval  Dummy3:FM ego                                                       0.0000  (     NA   )    1.9600   
+  12. creat Dummy3:FM ego                                                       0.0000  (     NA   )    1.1630   
+  13. eval  Dummy4:FM ego                                                       0.0000  (     NA   )    2.9123   
+  14. creat Dummy4:FM ego                                                       0.0000  (     NA   )    1.6720   
+  15. eval  Dummy3:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0287  ( 0.0092   )   -0.0061   
+  16. creat int.  Dummy3:FM ego x dyadFmMmc                                     1.0571  ( 0.7890   )    0.0297   
+  17. eval  Dummy4:FM ego x 4-cycles (1) same dyadMMCSum                       -0.0367  ( 0.0068   )    0.0404   
+  18. creat int.  Dummy4:FM ego x dyadFmMmc                                     0.0919  ( 0.8619   )   -0.0417   
+
+Behavior Dynamics
+  19. rate  rate Compl (period 1)                                               1.1725  ( 0.4725   )   -0.0593   
+  20. rate  rate Compl (period 2)                                               2.2909  ( 0.8582   )   -0.0111   
+  21. rate  rate Compl (period 3)                                               0.3880  ( 0.2188   )    0.0331   
+  22. rate  rate Compl (period 4)                                               1.1809  ( 0.4693   )   -0.0388   
+  23. rate  effect dyadMMCSum on rate Compl                                    -0.0257  ( 0.0147   )   -0.0212   
+  24. rate  effect dyadMMCSumDummy3:Compl on rate                              -0.0274  ( 0.0331   )   -0.0302   
+  25. rate  effect dyadMMCSumDummy4:Compl on rate                               0.0403  ( 0.0255   )   -0.0640   
+  26. eval  Compl linear shape                                                  0.2112  ( 0.3332   )   -0.0410   
+  27. eval  Compl quadratic shape                                              -0.0402  ( 0.0716   )   -0.0371   
+  28. eval  Compl outdegree                                                     0.0021  ( 0.0031   )   -0.0309   
+  29. eval  Compl tot. in-alt.dist. 2                                          -0.0033  ( 0.0050   )    0.0396   
+  30. eval  Compl tot. in-alt.dist. 2 x Dummy3:Compl: effect from Dummy3:Compl -0.0124  ( 0.0198   )   -0.0565   
+  31. eval  Compl tot. in-alt.dist. 2 x Dummy4:Compl: effect from Dummy4:Compl -0.0028  ( 0.0024   )    0.0186   
+  32. eval  Dummy3:Compl: effect from Dummy3:Compl                              0.0000  (     NA   )    1.0480   
+  33. eval  Dummy4:Compl: effect from Dummy4:Compl                              0.0000  (     NA   )    1.5300   
+
+Overall maximum convergence ratio:    0.1900 
+
+
+Total of 2552 iteration steps.

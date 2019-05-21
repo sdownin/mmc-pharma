@@ -25,6 +25,7 @@ library(parallel)
 library(RSiena)
 library(texreg)
 library(lubridate)
+library(systemfit)
 ncores <- detectCores()
 
 ## dir names
@@ -33,10 +34,13 @@ medtrack_dir <- file.path(proj_dir,"medtrack_data")
 medtrack_product_dir <- file.path(medtrack_dir,"products")
 medtrack_sales_dir <- file.path(medtrack_dir,"sales")
 
-image_file <- 'mmc_saom_dyadic_covar.RData'
-
 ## set working dir
 setwd(proj_dir)
+
+##
+image_file <- 'mmc_saom_multiple_nets_behav.RData'
+if (file.exists(image_file))
+  load(image_file)
 
 ##============================================
 ## Initialize data list
@@ -74,8 +78,8 @@ firmsmap = list(
   amgen=  c('amgen'),
   genzyme=  c('genzyme'),
   biogen=  c('biogen'),
-  abbvie=  c('abbvie'),
-  mylan=  c('mylan')
+  abbvie=  c('abbvie')#,
+  # mylan=  c('mylan')
 )
 firms <- names(firmsmap)
 
@@ -202,22 +206,34 @@ complexity <- function(x, scale=FALSE) {
 ##
 # return integer values for any inputs vectors
 ##
-behaviorDV <- function(x.do, x.all, limit=7) {
-  r <- seq(0, limit)
-  p <- r / max(r)
-  q <- quantile(x.all, probs = p)
+behaviorDV <- function(x.do, x.all, limit=7, logx=F) {
+  tol <- 1e-4
+  x.do[x.do==-Inf] <- 0
+  x.all[x.all==-Inf] <- 0
+  if (logx=='ln') {
+    x.do <- log(x.do)
+    x.all <- log(x.all)
+  } else if (logx=='2' | as.integer(logx)==2) {
+    x.do <- log2(x.do)
+    x.all <- log2(x.all)
+  } else if (logx=='10' | as.integer(logx)==10) {
+    x.do <- log10(x.do)
+    x.all <- log10(x.all)
+  }
+  xmax <- max(sort(x.all))
+  # cat(sprintf('xmax = %s\n', xmax))
+  q <- seq(0, xmax, by = xmax/limit)
   b <- sapply(x.do, function(x_i){
     for (i in 1:length(q)) {
       q_i <- q[i]
-      if (x_i <= q_i) {
-        return(i-1)
+      if (x_i <= (q_i+tol)) {
+        return(i-1)  ## subtract one to return 0,1,...,limit
       }
     }
     return(NA)
   })
   return(b)
 }
-
 
 ##===========================================
 ## Get Firm-Market network 
@@ -277,11 +293,15 @@ trtyr <- 2014
 # yr1 <- 2008  # 2006
 # yrs <- as.character(yr1:2017)
 # yrs <- as.character(c(2010, 2013, 2016))
-pdyrs <- list(
-  as.character(2009:2011),
-  as.character(2012:2014),
-  as.character(2015:2017)
-)
+# pdyrs <- list(
+#   as.character(2008:2009),
+#   as.character(2010:2011),
+#   as.character(2012:2013),
+#   as.character(2014:2015),
+#   as.character(2016:2017)
+# )
+pdyrs <- lapply(2008:2017,as.character)
+#
 yrs <- unlist(pdyrs)
 nyrs <- length(yrs)
 npds <- length(pdyrs)
@@ -318,11 +338,18 @@ for (k in 1:npds) {
     for (i in 1:length(firms)) {
       fm <- firms[i]
       dat[,yrs][is.na(dat[,yrs])] <- 0
-      idx.mk <- which(                               ### Row indices by:
-          grepl(mk, dat[,mkt_name]) &                ## market
-          grepl(fm, dat$firms) &                     ## firm
-          apply(dat[,yrs], 1, function(x)any(x>0))   ## years
+      datyrs <- subset(dat, select=yrs)
+      if (length(yrs)>1) {
+        idx.mk <- which(                               ### Row indices by:
+            grepl(mk, dat[,mkt_name]) &                ## market
+            grepl(fm, dat$firms) &                     ## firm
+            apply(datyrs, 1, function(x)any(x>0))   ## years
         )
+      } else {
+        idx.mk <- which(                               ### Row indices by:
+            grepl(mk, dat[,mkt_name]) & grepl(fm, dat$firms)                     ## firm
+        )
+      }
       if (length(idx.mk)>0) {
         yrnet[i,j] <- 1
         sumij <- sum(colSums(dat[idx.mk, yrs], na.rm = T), na.rm = T)
@@ -337,33 +364,89 @@ for (k in 1:npds) {
 #
 netWavesArray <- array(netWaves, dim=c(nrows, ncols, npds))
 
+
+## PLOT bipartite network
+library(igraph)
+t <- 4
+gt <- graph_from_incidence_matrix(netWavesArray[,,t], directed = F)
+V(gt)$name <- c(firms,1:ncols) 
+g <- induced.subgraph(gt, which(igraph::degree(gt)>0))
+par(mar=c(.1,.1,.1,.1))
+plot(g, layout=layout.fruchterman.reingold, 
+     vertex.size= sapply(V(g)$type,function(x) ifelse(x, 1.5, 11)),
+     vertex.shape = sapply(V(g)$type,function(x) ifelse(x, 'square','circle')),
+     vertex.color = sapply(V(g)$type,function(x) ifelse(x, 'gray','steelblue')),
+     vertex.label.cex = sapply(V(g)$type,function(x) ifelse(x, .3, 1.5))
+     )
+V(g)$eigen_cent <- c(unlist(eigen_centrality(g)$vector))
+V(g)$close_cent <- c(unlist(closeness(g, normalized = T)))
+V(g)$power1_cent <- c(unlist(power_centrality(g, exponent = -0.1)))
+V(g)$power2_cent <- c(unlist(power_centrality(g, exponent = -0.2)))
+V(g)$power3_cent <- c(unlist(power_centrality(g, exponent = -0.3)))
+V(g)$power4_cent <- c(unlist(power_centrality(g, exponent = -0.4)))
+V(g)$subgr_cent <- c(unlist(subgraph_centrality(g, diag = F))) / 1e12
+gdf <- as_data_frame(g, what='vertices')
+gdf <- gdf[order(gdf$subgr_cent, decreasing = T), ]
+gdf[!gdf$type, -c(1:2)]
+
+
 ## FM-MMC
 fmMmcWavesArray <- array(0, dim=c(nrows, ncols, npds))
 for (t in 1:npds) {
   tnet <- netWavesArray[,,t]
   for (i in 1:nrows) {
-    rs <- rowSums(tnet[, which(tnet[i,] > 0) ])
-    i.m <-  which(rs > 1)[ -c(i) ]  ## MMC alters indices
-    i.mmc <-    which(sapply(1:nrow(tnet), function(ii){
-        if (i == ii) return(FALSE)
-        return(sum(tnet[ii,i.m]) > 1)
-      }))
-    numOtherFirmsInMarket <- apply(tnet[i.mmc,], 2, function(x) length(x[x>0]) )
-    denom <- sum(tnet[i,] * numOtherFirmsInMarket) ## sum MMC Firm-Market Maximum Alters j
-    js <- which(tnet[i,] > 0)  ## firm i in which markets
-    fmsum <- rowSums(tnet[-c(i),js])  ## alters j in how many of i's markets
-    DimtDjmt <- fmsum[fmsum > 1]
-    sumNmmct <- sum(length(DimtDjmt)
-    fmMmcWavesArray[i,js,t]  <- DimtDjmt / Nmmct
+    ms <- which(tnet[i,] > 0)  ## markets that firm i is in
+    rs <- rowSums(tnet[,ms]) ## count of overlaps by rivals
+    i.m <-  which(rs > 1)  ## index of MMC alters from any market (including focal firm i)
+    ## NUMERATOR
+    ## identify MMC Rivals
+    ## Sum those rivlas overlaps overal all markets
+    NUMER <- apply(tnet[i.m, ], 2, function(x) {
+        idx <- which(x>0)    ##  [ -c(i) ]   ## exlude focal firm i  ??
+        if (length(idx)==0) return(0)
+        return(sum(rs[idx]))
+      })
+    ## DENOMINATOR
+    ## multiple # MMC rivals X number of markets firm i is in
+    ## identify MMC rivals
+    sigDimt <- sum(tnet[i,])  ## num markets firm i is in
+    NmmctVec <- colSums(tnet[i.m,])   ## number of MMC rivals in each market m
+    DENOM <- sigDimt * NmmctVec
+    ## firm i's all makrets MMC vector
+    MMCit <- NUMER / DENOM
+    MMCit[is.nan(MMCit) | is.na(MMCit) | MMCit==Inf | MMCit==-Inf] <- 0
+    fmMmcWavesArray[i,,t]  <- MMCit
   }
 }
+
+## PLot FM MMC Distributions
+par(mfrow=c(2,3)) 
+for (t in 1:npds) {
+  xt <- c(fmMmcWavesArray[,,t])
+  hist(xt, col='gray', 
+       main=sprintf('[%s-%s] Avg.MMC = %.3f',pdyrs[[t]][1],
+                    pdyrs[[t]][length(pdyrs[[t]])], 
+                    mean(xt)))
+  abline(v = c(.5,mean(xt)), lty=2:1, lwd=1:2, col=c('black','red'))
+}
+
+
+# numOtherMmcFirmsInMarkets <- apply(tnet[i.m,], 2, function(x) length(x[x>0]) )
+# denom <- sum(tnet[i,] * numOtherMmcFirmsInMarkets) ## sum MMC Firm-Market Alters j
+# #
+# js <- which(tnet[i,] > 0)  ## firm i in which markets
+# numMmcJ <- colSums(tnet[i.m,js])  ## number of mmc alters j in markets m in which firm i operates
+# # fmsum <- rowSums(tnet[-c(i),js])  ## alters j in how many of i's markets
+# # DimtDjmt <- fmsum[fmsum > 1]
+# # sumNmmct <- sum(length(DimtDjmt)
+
 #
 salesMarketWavesArray <- array(netWaves, dim=c(nrows, ncols, npds))
 salesWavesSum <-  c() 
 for (k in 1:npds) {
   salesWavesSum <- c(salesWavesSum,   rowSums(salesMarketWavesArray[,,k], na.rm = T) )
 }
-salesWavesArray <- array(behaviorDV(salesWavesSum, salesWavesSum), dim=c(nrows, npds))
+salesWavesArray <- array(behaviorDV(salesWavesSum, salesWavesSum, logx=F), dim=c(nrows, npds))
 
 # dyadic MMC
 dyadMMC.all <- c()
@@ -378,7 +461,7 @@ for (w in 1:npds) {
   X <- as.matrix(netWavesArray[,,w])
   ffw <- X %*% t(X)  ## MMC sum
   diag(ffw) <- 0     ## no self-MMC
-  dyadMMCWaves <- c(dyadMMCWaves, behaviorDV(ffw, dyadMMC.all))
+  dyadMMCWaves <- c(dyadMMCWaves, behaviorDV(ffw, dyadMMC.all, logx=F))
 }
 dyadMMCWavesArray <- array(dyadMMCWaves, dim=c(nrows, nrows, npds))
 # dyadFmMMCWavesArray <- array()
@@ -389,7 +472,15 @@ FIRMS <- sienaNodeSet(nrows, 'FIRMS', firms)
 # FIRMS2 <- sienaNodeSet(nrows, 'FIRMS', firms)
 MARKETS <- sienaNodeSet(ncols, 'MARKETS', mkts)
 
-
+# ## Categorize Restrucuring actions
+# df.re <- unique(ne[,c('news_category','news_subcategory')])
+# df.re$restruct <- NA
+# df.re$exploit <- NA
+# df.re <- df.re[order(df.re$news_category),]
+# write.csv(df.re, file = 'medtrack_news_subcategories_restruct.csv', row.names = F)
+df.re <- read.csv('medtrack_news_subcategories_restruct.csv', stringsAsFactors = F)
+restruct <- df.re$news_subcategory[which(df.re$restruct==1)]
+exploit  <- df.re$news_subcategory[which(df.re$exploit==1)]
 
 ## behavior (competitive aggressiveness)
 be <- data.frame()
@@ -400,27 +491,39 @@ for (k in 1:npds) {
   ne.yrs <- ne[which(ne$year %in% years), ]
   for (firm in firms) {
     ne.yrs.f <- ne.yrs[which(ne.yrs$firm==firm), ]
+    ne.yrs.f.re <- ne.yrs.f[which(ne.yrs.f$news_subcategory %in% restruct), ]
+    ne.yrs.f.ex <- ne.yrs.f[which(ne.yrs.f$news_subcategory %in% exploit), ]
+    ##888888888888888888
     if(nrow(ne.yrs.f)>0) {
       activ <- nrow(ne.yrs.f)
+      activRestruct <- nrow(ne.yrs.f.re)
+      activExploit <- nrow(ne.yrs.f.ex)
       ne.yrs.f.c <- plyr::count(ne.yrs.f$news_subcategory)
       compl <- complexity(ne.yrs.f.c$freq)
       compl.s <- 100 * complexity(ne.yrs.f.c$freq, scale=TRUE)
     } else {
       activ <- 0
+      activRestruct <- 0
+      activExploit <- 0
       compl <- 0
       compl.s <- 0
     }
     .tmp <- data.frame(yrmin=yrs[1], yrmax=yrs[length(yrs)], firm=firm, 
                        activity = activ,   activity.ln = log(activ),
+                       activityRestruct = activRestruct,   activityRestruct.ln = log(activRestruct),
+                       activityExploit = activExploit,   activityExploit.ln = log(activExploit),
                        complexity = compl, complexity.scale = compl.s, 
                        stringsAsFactors = F)
     be <- rbind(be, .tmp)
   }
 }
-behavior.cols <- c('activity','activity.ln','complexity','complexity.scale')
+behavior.cols <- c('activity','activity.ln',
+                   'activityRestruct','activityRestruct.ln',
+                   'activityExploit','activityExploit.ln',
+                   'complexity','complexity.scale')
 for (col in behavior.cols) {
   be[,sprintf('%s_orig',col)] <- be[,col]
-  be[,col] <- behaviorDV(be[,col], be[,col])
+  be[,col] <- behaviorDV(be[,col], be[,col], logx=F)
 }
 
 # ## subset to only observations with at least four actions
@@ -457,21 +560,34 @@ save.image(file=image_file)
 
 #
 activWaves <- c()
+activRestructWaves <- c()
+activExploitWaves <- c()
 complWaves <- c()
 for (k in 1:npds) {
   yrs <- pdyrs[[k]]
   be.yr <- be[which(be$yrmin == min(yrs)), ]
   activWaves <- c(activWaves, be.yr$activity )
+  activRestructWaves <- c(activRestructWaves, be.yr$activityRestruct )
+  activExploitWaves <- c(activExploitWaves, be.yr$activityExploit )
   complWaves <- c(complWaves, be.yr$complexity.scale )
 }
 
 activWavesArray <- array(activWaves, dim=c(nrows, npds))
+activRestructWavesArray <- array(activRestructWaves, dim=c(nrows, npds))
+activExploitWavesArray <- array(activExploitWaves, dim=c(nrows, npds))
 complWavesArray <- array(complWaves, dim=c(nrows, npds))
 salesBehavWaves <- salesWavesArray
-dyadMMCBehavWaves <- dyadMMCWavesArray[,,2:3]
 # dyadFmMMCBehavWaves <- dyadFmMMCWavesArray
 #
-mmcNetWavesArray <- dyadMMCBehavWaves
+
+# mmcNetWavesArray <- dyadMMCBehavWaves
+# .i1 <- which(mmcNetWavesArray > 1)
+# .i0 <- which(mmcNetWavesArray <= 1)
+# mmcNetWavesArray[.i1] <- 1
+# mmcNetWavesArray[.i0] <- 0
+#
+mmcNetWavesArray <- dyadMMCWavesArray
+dimnames(mmcNetWavesArray) <- list(1:nrows,1:nrows,1:npds)
 .i1 <- which(mmcNetWavesArray > 1)
 .i0 <- which(mmcNetWavesArray <= 1)
 mmcNetWavesArray[.i1] <- 1
@@ -487,39 +603,105 @@ FF <- sienaDependent(mmcNetWavesArray, type="oneMode", nodeSet=c('FIRMS'),
   
 Activ <- sienaDependent(activWavesArray, type="behavior", nodeSet=c('FIRMS'), 
                          sparse = FALSE, allowOnly = FALSE)
+ActivRestruct <- sienaDependent(activRestructWavesArray, type="behavior", nodeSet=c('FIRMS'), 
+                        sparse = FALSE, allowOnly = FALSE)
+ActivExploit <- sienaDependent(activExploitWavesArray, type="behavior", nodeSet=c('FIRMS'), 
+                        sparse = FALSE, allowOnly = FALSE)
 Compl <- sienaDependent(complWavesArray, type="behavior", nodeSet=c('FIRMS'), 
                              sparse = FALSE, allowOnly = FALSE)
 Sales <- sienaDependent(salesBehavWaves, type="behavior", nodeSet=c('FIRMS'), 
                            sparse = FALSE, allowOnly = FALSE)
 
-dyadMMC <- varDyadCovar(dyadMMCBehavWaves, centered = T, type = 'oneMode',  nodeSets = c('FIRMS','FIRMS'),
-                        sparse = FALSE)
+dyadMMCSumCov <- sapply(2:npds, function(t)colSums(dyadMMCWavesArray[,,t]))
+dyadMMCSum <- varCovar(dyadMMCSumCov, nodeSet = c('FIRMS'))
 
-##
-pharmaDat <- sienaDataCreate(FM, FF, Activ, Compl, # dyadMMC, # Sales,    ##dyCovTrt, dyCovTrtLinear, 
+
+dyadFmMmc <- varDyadCovar(fmMmcWavesArray[,,2:npds], nodeSets = c('FIRMS','MARKETS'))
+
+
+##-------------------------------------------
+pharmaDat <- sienaDataCreate(FM, ActivRestruct, dyadMMCSum, dyadFmMmc, # dyadMMC, # Sales,    ##dyCovTrt, dyCovTrtLinear, 
                              nodeSets=list(FIRMS, MARKETS) ) #,smoke1, alcohol
 #
-pharmaEffects <- getEffects(pharmaDat)
+pharmaEffects <- getEffects(pharmaDat, behNintn=12)
 #
 effectsDocumentation(pharmaEffects)
 # print01Report(pharmaDat, modelname="pharma-test-1")
 
+pharmaEffects <- includeEffects(pharmaEffects, outAct, cycle4, name="FM")
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc')
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation')
+pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'ActivRestruct')
+#
+pharmaEffects <- includeTimeDummy(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'ActivRestruct', timeDummy = '3,4')
+####
+pharmaEffects <- includeEffects(pharmaEffects, RateX, name="ActivRestruct", interaction1 = 'ActivRestruct', type='rate')
+pharmaEffects <- includeEffects(pharmaEffects, outdeg,  name="ActivRestruct", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, totInAltDist2,  name="ActivRestruct", interaction1 = 'FM')
+# pharmaEffects <- includeEffects(pharmaEffects, totXInAltDist2,  name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum')
+#
+pharmaEffects <- includeTimeDummy(pharmaEffects, totInAltDist2, name="ActivRestruct", interaction1='FM', timeDummy = '3,4')
+# pharmaEffects <- includeTimeDummy(pharmaEffects, totXInAltDist2, name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, RateX, name="ActivRestruct", interaction1 = 'ActivRestruct', timeDummy = '3,4', type='rate')
+#
+pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-2many')
+
+pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
+                         batch = T,   returnDeps = T, # necessary for GOF
+                         useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
+)
+
+screenreg(pharmaResults, digits = 4)
+pharmaResults
+
+saveRDS(list(pharmaResults=pharmaResults), file='pharmaResults_mmc_activRestruct_dyadFmMmc.rds')
+
+###
+redo <- pharmaResults$tconv.max[1] > 0.25
+while(redo) {
+  pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
+                           prevAns=pharmaResults,
+                           batch = T,   returnDeps = T , # necessary for GOF
+                           useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
+  )
+  redo <- pharmaResults$tconv.max[1] > 0.25
+}
+###
+
+#
+gofo1f <- sienaGOF(pharmaResults, OutdegreeDistribution, join=TRUE,
+                   varName="FM", verbose = T)
+plot(gofo1f)
+
+
+
+
+##-------------------------------------------
+pharmaDat <- sienaDataCreate(FM, Activ, dyadMMCSum, dyadFmMmc, # dyadMMC, # Sales,    ##dyCovTrt, dyCovTrtLinear, 
+                             nodeSets=list(FIRMS, MARKETS) ) #,smoke1, alcohol
+#
+pharmaEffects <- getEffects(pharmaDat, behNintn=12)
+#
+effectsDocumentation(pharmaEffects)
+# print01Report(pharmaDat, modelname="pharma-test-1")
 
 pharmaEffects <- includeEffects(pharmaEffects, outAct, cycle4, name="FM")
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc')
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation')
+pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'dyadMMCSum')
 #
-pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Activ')
-pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Activ', timeDummy = '2')
+pharmaEffects <- includeTimeDummy(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'dyadMMCSum', timeDummy = '3,4')
+####
+pharmaEffects <- includeEffects(pharmaEffects, RateX, name="Activ", interaction1 = 'dyadMMCSum', type='rate')
+pharmaEffects <- includeEffects(pharmaEffects, outdeg,  name="Activ", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, totInAltDist2,  name="Activ", interaction1 = 'FM')
+# pharmaEffects <- includeEffects(pharmaEffects, totXInAltDist2,  name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum')
 #
-pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Compl')
-pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Compl', timeDummy = '2')
-#
-pharmaEffects <- includeEffects(pharmaEffects, outdeg, avInAltDist2,  name="Activ", interaction1 = 'FM')
-pharmaEffects <- includeTimeDummy(pharmaEffects, outdeg,  name="Activ", interaction1 = 'FM', timeDummy = '2')
-pharmaEffects <- includeTimeDummy(pharmaEffects, avInAltDist2,  name="Activ", interaction1 = 'FM', timeDummy = '2')
-#
-pharmaEffects <- includeEffects(pharmaEffects, outdeg, avInAltDist2,  name="Compl", interaction1 = 'FM')
-pharmaEffects <- includeTimeDummy(pharmaEffects, outdeg, name="Compl", interaction1 = 'FM', timeDummy = '2')
-pharmaEffects <- includeTimeDummy(pharmaEffects, avInAltDist2,  name="Compl", interaction1 = 'FM', timeDummy = '2')
+pharmaEffects <- includeTimeDummy(pharmaEffects, totInAltDist2, name="Activ", interaction1='FM', timeDummy = '3,4')
+# pharmaEffects <- includeTimeDummy(pharmaEffects, totXInAltDist2, name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, RateX, name="Activ", interaction1 = 'dyadMMCSum', timeDummy = '3,4', type='rate')
 #
 pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-2many')
 
@@ -528,26 +710,89 @@ pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects,
                          useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
                          )
 
+screenreg(pharmaResults, digits = 4)
+pharmaResults
+
+saveRDS(list(pharmaResults=pharmaResults), file='pharmaResults_mmc_activ_dyadFmMmc.rds')
+
+###
 redo <- pharmaResults$tconv.max[1] > 0.25
 while(redo) {
   pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
                            prevAns=pharmaResults,
                            batch = T,   returnDeps = T , # necessary for GOF
                            useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
-                          )
+  )
   redo <- pharmaResults$tconv.max[1] > 0.25
 }
+###
 
-screenreg(pharmaResults, digits = 4)
-pharmaResults
-
-saveRDS(list(pharmaResults=pharmaResults), file='pharmaResults_mmc_activ_compl_avInAltDist2.rds')
-##---------------------------------------------
 #
 gofo1f <- sienaGOF(pharmaResults, OutdegreeDistribution, join=TRUE,
                    varName="FM", verbose = T)
 plot(gofo1f)
-##_---------------------------------------------
+
+
+
+
+##-------------------------------------------
+pharmaDat <- sienaDataCreate(FM, Compl, dyadMMCSum, dyadFmMmc, # dyadMMC, # Sales,    ##dyCovTrt, dyCovTrtLinear, 
+                             nodeSets=list(FIRMS, MARKETS) ) #,smoke1, alcohol
+#
+pharmaEffects <- getEffects(pharmaDat, behNintn=12)
+#
+effectsDocumentation(pharmaEffects)
+# print01Report(pharmaDat, modelname="pharma-test-1")
+
+pharmaEffects <- includeEffects(pharmaEffects, outAct, cycle4, name="FM")
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc')
+pharmaEffects <- includeEffects(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation')
+pharmaEffects <- includeEffects(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Compl')
+#
+pharmaEffects <- includeTimeDummy(pharmaEffects, X, name="FM", interaction1 = 'dyadFmMmc', type='creation', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, cycle4, name="FM", timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, sameXCycle4, name="FM", interaction1 = 'Compl', timeDummy = '3,4')
+####
+pharmaEffects <- includeEffects(pharmaEffects, RateX, name="Compl", interaction1 = 'dyadMMCSum', type='rate')
+pharmaEffects <- includeEffects(pharmaEffects, outdeg,  name="Compl", interaction1 = 'FM')
+pharmaEffects <- includeEffects(pharmaEffects, totInAltDist2,  name="Compl", interaction1 = 'FM')
+# pharmaEffects <- includeEffects(pharmaEffects, totXInAltDist2,  name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum')
+#
+pharmaEffects <- includeTimeDummy(pharmaEffects, totInAltDist2, name="Compl", interaction1='FM', timeDummy = '3,4')
+# pharmaEffects <- includeTimeDummy(pharmaEffects, totXInAltDist2, name="Activ", interaction1 = 'FM', interaction2='dyadMMCSum', timeDummy = '3,4')
+pharmaEffects <- includeTimeDummy(pharmaEffects, RateX, name="Compl", interaction1 = 'dyadMMCSum', timeDummy = '3,4', type='rate')
+#
+pharmaModel <- sienaAlgorithmCreate(projname='pharma-mmc-test-proj-2many')
+
+pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
+                         batch = T,   returnDeps = T, # necessary for GOF
+                         useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
+)
+
+screenreg(pharmaResults, digits = 4)
+pharmaResults
+
+saveRDS(list(pharmaResults=pharmaResults), file='pharmaResults_mmc_Compl_dyadFmMmc_sameXCycle4-Compl_4cycleTimeDymmy.rds')
+
+###
+redo <- pharmaResults$tconv.max[1] > 0.25
+while(redo) {
+  pharmaResults <- siena07(pharmaModel, data=pharmaDat, effects=pharmaEffects, 
+                           prevAns=pharmaResults,
+                           batch = T,   returnDeps = T , # necessary for GOF
+                           useCluster = T, nbrNodes = ncores, clusterType = 'PSOCK'
+  )
+  redo <- pharmaResults$tconv.max[1] > 0.25
+}
+###
+
+#
+gofo1f <- sienaGOF(pharmaResults, OutdegreeDistribution, join=TRUE,
+                   varName="FM", verbose = T)
+plot(gofo1f)
+##----------------------------------------------------------------------------
+
+
 ##
 ##
 pharmaDat <- sienaDataCreate(depMMC, depCompl,    ##dyCovTrt, dyCovTrtLinear, 
