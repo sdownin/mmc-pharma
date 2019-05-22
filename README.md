@@ -1,3 +1,3 @@
 # Pharma MMC
 
-Multimarket contact analysis of the pharmaceutical industry.
+Analysis of multimarket contact and competition in the pharmaceutical industry.
