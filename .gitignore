@@ -8,6 +8,7 @@
 *.zip*
 *.tar*
 *.gz*
+*.agz*
 *.bz*
 *.pdf
 *.tmp*
@@ -28,3 +29,5 @@ glmmadmb/*
 
 *.ini*
 *.out
+
+medtrack_data/medtrack_news_links_parsed.sql
