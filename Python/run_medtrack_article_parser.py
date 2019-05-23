@@ -12,24 +12,27 @@ work_dir = 'C:\\Users\\T430\\Google Drive\\PhD\\Research\\MMC\\pharma_encounters
 os.chdir(os.path.join(work_dir, 'Python'))
 from medtrack_article_parser import MedtrackArticle, fix_header, get_user_agent
 
+## directories 
+data_dir = os.path.join(work_dir, 'medtrack_data')
+news_links_dir = os.path.join(data_dir, 'news_links')
+
+## Database Credentials
+MONGO_URI = 'localhost' #'mongodb://127.0.0.1'
+MONGO_DATABASE = 'medtrack'
+MONGODB_COLLECTION  = 'news'
+#MONGO_PORT = 27017
+
 
 def run():
     """ Main run script
     """
-    ## directories 
-    data_dir = os.path.join(work_dir, 'medtrack_data')
-    news_links_dir = os.path.join(data_dir, 'news_links')
-    
-    ## Database Credentials
-    MONGO_URI = 'localhost' #'mongodb://127.0.0.1'
-    MONGO_DATABASE = 'medtrack'
-    MONGODB_COLLECTION  = 'news'
-    #MONGO_PORT = 27017
-
     ## database connection
     client = pymongo.MongoClient(MONGO_URI)
     collection = client[MONGO_DATABASE][MONGODB_COLLECTION]
     USER_AGENT = get_user_agent()
+    
+    ## read in collection contents if any
+    colldf = pd.DataFrame([ x for x in collection.find({}) ])
     
     ## parse arguments
     par = ArgumentParser(description="Fetch and Parse Medtrack News Articles")
@@ -38,9 +41,9 @@ def run():
     file = args.file
     
     ##====================================================
-    ## GET NEWS BODY FOR EACH ARTICLE
+    ## GET NEWS ARTICLE TEXT FOR EACH ARTICLE
     ##----------------------------------------------------
-    dir_files = [x for x in os.listdir(news_links_dir) if '.xls' in x]
+    dir_files = [x for x in os.listdir(news_links_dir) if '.xls' in x and 'PARSED_' not in x]
     ##
     if file is not None:
         run_files = [x for x in dir_files if file in x]
@@ -60,6 +63,10 @@ def run():
             
         ## process each row to parse articles
         for index, row in df.iterrows():
+            ## skip record already exists in database
+            if colldf.shape[0] and (colldf['link'] == row.link).any():
+                continue  
+            ## process new record
             verbose = index % 100 == 0
             article = MedtrackArticle(row.link, collection, row.to_dict(), USER_AGENT)
             article.parse()

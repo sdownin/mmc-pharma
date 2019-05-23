@@ -8,6 +8,7 @@ Created on Thu Apr 18 01:21:28 2019
 import re, requests
 from bs4 import BeautifulSoup
 import numpy as np
+from bson.objectid import ObjectId
 #import sys
 #from time import time, sleep
 #from threading import Thread
@@ -15,12 +16,29 @@ import numpy as np
 
 ## functions
 def fix_header(x):
-    x = re.sub('-', '', x.strip().lower())
-    return re.sub('\s', '_', x)
+    x = x if isinstance(x, str) else str(x)
+    if not isinstance(x, str):
+        print('fix_header():: x is not a string; returning x.')
+        return x
+    else:
+        x = re.sub('-', '', x.strip().lower())
+        return re.sub('\s', '_', x)
 
 def clean_text(x):
-    return re.sub('[\\r\\n]+', '', x.strip())
+    x = x if isinstance(x, str) else str(x)
+    if not isinstance(x, str):
+        print('clean_text():: x is not a string; returning x.')
+        return x
+    else:
+        return re.sub('[\\r\\n]+', '', x.strip())
 
+def strip_str(x):
+    x = x if isinstance(x, str) else str(x)
+    if not isinstance(x, str):
+        print('strip_str():: x is not a string; returning x.')
+        return x
+    else:
+        return x.strip()
 
 def get_user_agent(x=None):
     """ select user agent string or randomly choose from list
@@ -89,10 +107,10 @@ class MedtrackArticle(object):
                     trsoup = BeautifulSoup('<html>%s</html>' % tr, 'html.parser')
                     tds = trsoup.select('td')
                     key = fix_header(clean_text(tds[0].text))
-                    val = tds[1].text.strip() if len(tds) > 1 else ''
+                    val = strip_str(tds[1].text) if len(tds) > 1 else ''
                 else:   ## article text in the final row
                     key = 'article'
-                    val =  tr.text.strip()  ## clean_text(tr.text)  # don't remove \r,\n yet
+                    val =  strip_str(tr.text) ## clean_text(tr.text)  # don't remove \r,\n yet
                 self.item[key] = val
             if verbose:
                 print(" OK")
@@ -117,7 +135,18 @@ class MedtrackArticle(object):
         if not isinstance(field, (dict)):
             raise ValueError(' `field` must be dict type.')
         collection = self.collection if collection is None else collection
-        collection.update_one(self.item, {"$set": field})
+        result = collection.update_one(self.item, {"$set": field})
+        if result:
+            print(result.raw_result)
+
+    def update_by_id(self, field, collection=None):
+        if not isinstance(field, (dict)):
+            raise ValueError(' `field` must be dict type.')
+        collection = self.collection if collection is None else collection
+        query = {'_id': ObjectId(self.item['_id'])}
+        result = collection.update_one(query, {"$set": field})
+        if result:
+            print(' %s: %s' %(self.item['_id'], result.raw_result))
 
 
 #class MedtrackThread(object):
