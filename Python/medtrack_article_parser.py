@@ -74,9 +74,9 @@ class MedtrackArticle(object):
             #,'From': 'acannella'  # This is another valid field
         }
         
-    def parse(self):
+    def parse(self, verbose=False):
         """ Parse article text and metadata from html page
-        returned from given 
+        returned from given URL
         """
         try:
             r = requests.get(self.url, headers=self.headers)
@@ -85,31 +85,32 @@ class MedtrackArticle(object):
             # self.item['title'] = clean_text(titles[0].text)
             trs = soup.select('tr.odd')
             for i,tr in enumerate(trs):
-                if i < (len(trs)-1):
+                if i < (len(trs)-1):  ## metadata before the final row
                     trsoup = BeautifulSoup('<html>%s</html>' % tr, 'html.parser')
                     tds = trsoup.select('td')
-                    key = fix_header(clean_text(tds[0].text) )
-                    val = clean_text(tds[1].text) if len(tds) > 1 else ''
-                else: 
+                    key = fix_header(clean_text(tds[0].text))
+                    val = tds[1].text.strip() if len(tds) > 1 else ''
+                else:   ## article text in the final row
                     key = 'article'
-                    val = clean_text(tr.text)
+                    val =  tr.text.strip()  ## clean_text(tr.text)  # don't remove \r,\n yet
                 self.item[key] = val
-            print(' OK')
+            if verbose:
+                print(" OK")
         except requests.exceptions.HTTPError as errh:
-            print ("Http Error:",errh)
+            print(" Http Error:",errh)
         except requests.exceptions.ConnectionError as errc:
-            print ("Error Connecting:",errc)
+            print(" Error Connecting:",errc)
         except requests.exceptions.Timeout as errt:
-            print ("Timeout Error:",errt)
+            print(" Timeout Error:",errt)
         except requests.exceptions.RequestException as err:
-            print ("OOps: Something Else",err)
+            print(" OOps: Something Else",err)
 
-    def save(self, collection=None):
+    def save(self, collection=None, verbose=False):
         collection = self.collection if collection is None else collection
         if not collection.find_one(self.item):
             _id = collection.insert_one(self.item)
             self.item['_id'] = _id.inserted_id
-            if '_id' in self.item.keys():
+            if verbose and '_id' in self.item.keys():
                 print(' inserted Mongodb _id: %s' % str(self.item['_id']))
 
     def update(self, field, collection=None):

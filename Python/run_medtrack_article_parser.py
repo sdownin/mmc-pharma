@@ -59,13 +59,14 @@ def run():
             df['is_parsed'] = df.link.apply(lambda _: None)
             
         ## process each row to parse articles
-        for index, row in df.iterrows(): 
+        for index, row in df.iterrows():
+            verbose = index % 100 == 0
             article = MedtrackArticle(row.link, collection, row.to_dict(), USER_AGENT)
             article.parse()
             if article.item.keys():
                 df.loc[index,'is_parsed'] = 1
-                article.save()
-            if index % 20 == 0:
+                article.save(verbose=verbose)
+            if verbose:
                 print('  %s: %s' % (index, row.news_headline[:40]))
                 df.to_excel(file_i_parsed_path, index=False)
 
