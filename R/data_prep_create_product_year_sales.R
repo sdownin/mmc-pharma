@@ -382,7 +382,7 @@ printReport <- function() {
   
   ## THERACAT -- Use dfs (product level)
   tmp <- dfs %>% count(THERACAT, sort = T)
-  cat(sprintf('\n Num THERACAT: %s\n',nrow(tmp)))
+  cat(sprintf('\n Num THERACAT: %s\n',length(unique(unlist(str_split(dfs$THERACAT,'[|]'))))))
   nall <- nrow(tmp)
   idxall <- 1:nall
   naidx <- which(is.na(tmp$THERACAT))   ## Missing
@@ -404,7 +404,7 @@ printReport <- function() {
   
   ## THERACLS -- Use dfs (product level)
   tmp <- dfs %>% count(THERACLS, sort = T)
-  cat(sprintf('\n Num THERACLS: %s\n',nrow(tmp)))
+  cat(sprintf('\n Num THERACLS: %s\n',length(unique(unlist(str_split(dfs$THERACLS,'[|]'))))))
   nall <- nrow(tmp)
   idxall <- 1:nall
   naidx <- which(is.na(tmp$THERACLS))   ## Missing
