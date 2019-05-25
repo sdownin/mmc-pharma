@@ -202,6 +202,20 @@ dim(dflm)
 # ck <- ck[order(ck$freq, decreasing = T),]
 # ck[ck$freq > 1, ]
 
+## cache full dataframe-long-merge df before subsetting to pharma cohort
+if (!'dflm.all' %in% ls()) 
+  dflm.all <- dflm
+
+## FILTER ONLY FIRMS IN focal cohort
+fidx <- which(sapply(dflm$firm_name, function(firmIDstr){
+  for(id in names(firmIDs)) {
+    if (any(grepl(id, firmIDstr, ignore.case = T, perl = T))) {
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+}))
+dflm <- dflm[fidx, ]
 
 ##============================================
 ##  RENAME COLUMNS AND DATA FRAME
@@ -222,7 +236,7 @@ colmap <- list(
   DELTECH = "drug_delivery_technology",
   SINGLE = 'is_single',
   ACTVIGT = 'active_ingredient',
-  HIPHADEV = 'highest_phase_of_development',
+  # HIPHADEV = 'highest_phase_of_development',
   PRODTYPE = 'product_type',
   MOLTYPE = 'molecule_type',
   SUBORIG = 'substance_of_origin',
@@ -256,6 +270,7 @@ salesfilebase <- file.path(medtrack_dir, 'COMBINED','20190521','sales',
                            'medtrack_product_sales')
 write.csv(dflm[,names(colmap)], file = sprintf('%s.csv',salesfilebase), row.names = F)
 
+## dflm <- read.csv(sprintf('%s.csv',salesfilebase), na.strings=c('','--','NaN','NA'), stringsAsFactors=F)
 
 ##============================================
 ## SUMMARIZE 
@@ -266,29 +281,454 @@ dim(dfsr)
 dim(dfs)
 
 # dfsr %>% group_by(REGION) %>% tally(sort = T) %>% ungroup() %>% arrange(desc(n))
-dfsr %>% count(REGION, sort = T)  ## count by multiple groups
-dfs %>% count(FIRMID, sort = T) 
-dfs %>% count(CONAME, sort = T) 
-dfs %>% count(ACTVIGT, sort = T) 
-dfs %>% count(CONDITION, sort = T) 
-dfs %>% count(THERACAT, sort = T) 
-dfs %>% count(THERACLS, sort = T) 
-dfs %>% count(HIPHADEV, sort = T) 
-dfs %>% count(PRODTYPE, sort = T) 
-dfs %>% count(MOLTYPE, sort = T) 
-dfs %>% count(SUBORIG, sort = T) 
-dfs %>% count(TARGET, sort = T) 
-dfs %>% count(MOA, sort = T) 
-dfs %>% count(MODEACT, sort = T) 
-dfs %>% count(MKTSTAT, sort = T) 
-dfs %>% count(RTADMIN, sort = T) 
-dfs %>% count(DOSFORM, sort = T) 
-dfs %>% count(EPDRCLS, sort = T) 
-dfs %>% count(CBIOCLS, sort = T) 
-dfs %>% count(PRODESC, sort = T) 
-dfs %>% count(STRENGTH, sort = T) 
-dfs %>% count(DELTECH, sort = T) 
 
+##-------------------------------
+## PRINT REPORT
+##-------------------------------
+printReport <- function() {
+
+  ## REGION -- Use dfsr (product-region level of analysis)
+  tmp <- dfsr %>% count(REGION, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$REGION))   ## Missing
+  midx <- which(grepl(',',tmp$REGION) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(REGION='Other Single', n=nsingle),
+               data.frame(REGION='Multiple', n=nmulti),
+               data.frame(REGION='None', n=nmissing),
+               data.frame(REGION='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  ## FIRMID -- Use dfs (product level)
+  tmp <- dfs %>% count(FIRMID, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$FIRMID))   ## Missing
+  midx <- which(grepl('[|]',tmp$FIRMID) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(FIRMID='Other Single', n=nsingle),
+               data.frame(FIRMID='Multiple', n=nmulti),
+               data.frame(FIRMID='None', n=nmissing),
+               data.frame(FIRMID='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## CONAME -- Use dfs (product level)
+  tmp <- dfs %>% count(CONAME, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$CONAME))   ## Missing
+  midx <- which(grepl(',',tmp$CONAME) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(CONAME='Other Single', n=nsingle),
+               data.frame(CONAME='Multiple', n=nmulti),
+               data.frame(CONAME='None', n=nmissing),
+               data.frame(CONAME='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  ## ACTVIGT -- Use dfs (product level)
+  tmp <- dfs %>% count(ACTVIGT, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$ACTVIGT))   ## Missing
+  midx <- which(grepl(',',tmp$ACTVIGT) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(ACTVIGT='Other Single', n=nsingle),
+               data.frame(ACTVIGT='Multiple', n=nmulti),
+               data.frame(ACTVIGT='None', n=nmissing),
+               data.frame(ACTVIGT='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  ##---------------------------------------------------------------
+  ## CONDITION -- Use dfs (product level)
+  ucond <- unique(unlist(str_split(dfs$CONDITION, "\\(\\w{0,5}\\)")))
+  uconds <- ucond[which(ucond != '')]
+  tmp <- data.frame()
+  for (cond in uconds) {
+    tmp <- rbind(tmp, data.frame(CONDITION=cond, n=length(grep(cond,dfs$CONDITION))))
+  }
+  tmp <- as_tibble(tmp[order(tmp$n, decreasing = T),])
+  print(tmp)
+  ##-------------------------------------------------------------------
+  
+  ## THERACAT -- Use dfs (product level)
+  tmp <- dfs %>% count(THERACAT, sort = T)
+  cat(sprintf('\n Num THERACAT: %s\n',nrow(tmp)))
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$THERACAT))   ## Missing
+  midx <- which(grepl(',',tmp$THERACAT) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(THERACAT='Other Single', n=nsingle),
+               data.frame(THERACAT='Multiple', n=nmulti),
+               data.frame(THERACAT='None', n=nmissing),
+               data.frame(THERACAT='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## THERACLS -- Use dfs (product level)
+  tmp <- dfs %>% count(THERACLS, sort = T)
+  cat(sprintf('\n Num THERACLS: %s\n',nrow(tmp)))
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$THERACLS))   ## Missing
+  midx <- which(grepl('[|]',tmp$THERACLS) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(THERACLS='Other Single', n=nsingle),
+               data.frame(THERACLS='Multiple', n=nmulti),
+               data.frame(THERACLS='None', n=nmissing),
+               data.frame(THERACLS='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## HIPHADEV -- Use dfs (product level)
+  tmp <- dfs %>% count(HIPHADEV, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$HIPHADEV))   ## Missing
+  midx <- which(grepl(',',tmp$HIPHADEV) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(HIPHADEV='Other Single', n=nsingle),
+               data.frame(HIPHADEV='Multiple', n=nmulti),
+               data.frame(HIPHADEV='None', n=nmissing),
+               data.frame(HIPHADEV='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## PRODTYPE -- Use dfs (product level)
+  tmp <- dfs %>% count(PRODTYPE, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$PRODTYPE))   ## Missing
+  midx <- which(grepl(',',tmp$PRODTYPE) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(PRODTYPE='Other Single', n=nsingle),
+               data.frame(PRODTYPE='Multiple', n=nmulti),
+               data.frame(PRODTYPE='None', n=nmissing),
+               data.frame(PRODTYPE='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## MOLTYPE -- Use dfs (product level)
+  dfs$MOLTYPE[dfs$MOLTYPE=='NA'] <- NA
+  tmp <- dfs %>% count(MOLTYPE, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$MOLTYPE))   ## Missing
+  midx <- which(grepl(',',tmp$MOLTYPE) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(MOLTYPE='Other Single', n=nsingle),
+               data.frame(MOLTYPE='Multiple', n=nmulti),
+               data.frame(MOLTYPE='None', n=nmissing),
+               data.frame(MOLTYPE='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## SUBORIG -- Use dfs (product level)
+  tmp <- dfs %>% count(SUBORIG, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$SUBORIG))   ## Missing
+  midx <- which(grepl(',',tmp$SUBORIG) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(SUBORIG='Other Single', n=nsingle),
+               data.frame(SUBORIG='Multiple', n=nmulti),
+               data.frame(SUBORIG='None', n=nmissing),
+               data.frame(SUBORIG='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## TARGET -- Use dfs (product level)
+  tmp <- dfs %>% count(TARGET, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$TARGET))   ## Missing
+  midx <- which(grepl(',',tmp$TARGET) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(TARGET='Other Single', n=nsingle),
+               data.frame(TARGET='Multiple', n=nmulti),
+               data.frame(TARGET='None', n=nmissing),
+               data.frame(TARGET='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## MOA : MOLECULE OF ACTION -- Use dfs (product level)
+  tmp <- dfs %>% count(MOA, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$MOA))   ## Missing
+  midx <- which(grepl(',',tmp$MOA) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(MOA='Other Single', n=nsingle),
+               data.frame(MOA='Multiple', n=nmulti),
+               data.frame(MOA='None', n=nmissing),
+               data.frame(MOA='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## MODEACT -- Use dfs (product level)
+  tmp <- dfs %>% count(MODEACT, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$MODEACT))   ## Missing
+  midx <- which(grepl(',',tmp$MODEACT) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(MODEACT='Other Single', n=nsingle),
+               data.frame(MODEACT='Multiple', n=nmulti),
+               data.frame(MODEACT='None', n=nmissing),
+               data.frame(MODEACT='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## MKTSTAT -- Use dfs (product level)
+  tmp <- dfs %>% count(MKTSTAT, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$MKTSTAT))   ## Missing
+  midx <- which(grepl(',',tmp$MKTSTAT) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(MKTSTAT='Other Single', n=nsingle),
+               data.frame(MKTSTAT='Multiple', n=nmulti),
+               data.frame(MKTSTAT='None', n=nmissing),
+               data.frame(MKTSTAT='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## RTADMIN : Route of Administration -- Use dfs (product level)
+  tmp <- dfs %>% count(RTADMIN, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$RTADMIN))   ## Missing
+  midx <- which(grepl(',',tmp$RTADMIN) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(RTADMIN='Other Single', n=nsingle),
+               data.frame(RTADMIN='Multiple', n=nmulti),
+               data.frame(RTADMIN='None', n=nmissing),
+               data.frame(RTADMIN='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## DOSFORM -- Use dfs (product level)
+  dfs$DOSFORM <- str_to_lower(dfs$DOSFORM)
+  tmp <- dfs %>% count(DOSFORM, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$DOSFORM))   ## Missing
+  midx <- which(grepl('(;|,)',tmp$DOSFORM) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(DOSFORM='Other Single', n=nsingle),
+               data.frame(DOSFORM='Multiple', n=nmulti),
+               data.frame(DOSFORM='None', n=nmissing),
+               data.frame(DOSFORM='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## EPDRCLS -- Use dfs (product level)
+  tmp <- dfs %>% count(EPDRCLS, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$EPDRCLS))   ## Missing
+  midx <- which(grepl(',',tmp$EPDRCLS) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(EPDRCLS='Other Single', n=nsingle),
+               data.frame(EPDRCLS='Multiple', n=nmulti),
+               data.frame(EPDRCLS='None', n=nmissing),
+               data.frame(EPDRCLS='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## CBIOCLS -- Use dfs (product level)
+  tmp <- dfs %>% count(CBIOCLS, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$CBIOCLS))   ## Missing
+  midx <- which(grepl(',',tmp$CBIOCLS) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(CBIOCLS='Other Single', n=nsingle),
+               data.frame(CBIOCLS='Multiple', n=nmulti),
+               data.frame(CBIOCLS='None', n=nmissing),
+               data.frame(CBIOCLS='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  #----------------------------------------------
+  ## PRODESC -- Use dfs (product level)
+  tmpidx <- which(!is.na(dfs$PRODESC) & dfs$PRODESC != '')
+  cat(sprintf('\n\n Records with PRODESC:  %.2f%s\n\n\n',100*length(tmpidx)/nrow(dfs),'%'))
+  #----------------------------------------------
+  
+  
+  ## STRENGTH -- Use dfs (product level)
+  tmp <- dfs %>% count(STRENGTH, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$STRENGTH))   ## Missing
+  midx <- which(grepl(',',tmp$STRENGTH) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(STRENGTH='Other Single', n=nsingle),
+               data.frame(STRENGTH='Multiple', n=nmulti),
+               data.frame(STRENGTH='None', n=nmissing),
+               data.frame(STRENGTH='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+  
+  ## DELTECH -- Use dfs (product level)
+  tmp <- dfs %>% count(DELTECH, sort = T)
+  nall <- nrow(tmp)
+  idxall <- 1:nall
+  naidx <- which(is.na(tmp$DELTECH))   ## Missing
+  midx <- which(grepl(',',tmp$DELTECH) & !idxall %in% c(naidx))  ##Multiple
+  sidx <- which(idxall > 10 & !idxall %in% c(naidx,midx))  ##Multiple
+  idx <- which( !idxall %in% c(naidx,midx,sidx))
+  ntop <- sum(tmp$n[idx])
+  nmissing <- sum(tmp$n[naidx])
+  nsingle <- sum(tmp$n[sidx])
+  nmulti <- sum(tmp$n[midx])
+  tmp <- rbind(tmp[idx,], 
+               data.frame(DELTECH='Other Single', n=nsingle),
+               data.frame(DELTECH='Multiple', n=nmulti),
+               data.frame(DELTECH='None', n=nmissing),
+               data.frame(DELTECH='TOTAL', n=ntop+nsingle+nmulti+nmissing)
+  )
+  print(tmp)
+  
+
+}
+printReport()
 
 
 ##============================================

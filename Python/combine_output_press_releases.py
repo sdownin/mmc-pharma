@@ -7,6 +7,7 @@ Created on Wed May 22 00:29:51 2019
 import os, pymongo, re
 import pandas as pd
 import numpy as np
+from textstat import gunning_fog, text_standard ## concensus of RIs
 
 work_dir = 'C:\\Users\\T430\\Google Drive\\PhD\\Research\\MMC\\pharma_encounters\\mmc-pharma'
 os.chdir(os.path.join(work_dir, 'Python'))
@@ -15,7 +16,7 @@ os.chdir(os.path.join(work_dir, 'Python'))
 data_dir = os.path.join(work_dir, 'medtrack_data')
 news_links_dir = os.path.join(data_dir, 'news_subcategories')
 out_dir = os.path.join(work_dir, 'medtrack_data\\COMBINED\\20190521\\press_releases')
-
+out_file = 'medtrack_press_release'
 
 ## FUNCTIONS
 def fix_NaN(x):
@@ -74,8 +75,9 @@ col_map = {
     'about_firm_3': 'ABOUTFIRM3',
     'about_firm_4': 'ABOUTFIRM4',
     'about_firm_5': 'ABOUTFIRM5',
-    'about_firm_6': 'ABOUTFIRM6',
+    #'about_firm_6': 'ABOUTFIRM6',
     'source': 'SRC',
+    'source_2': 'SRC2',
     'is_firm_source': 'ISFIRMSRC',
     'firm': 'FIRMID',
     'company_name': 'CONAME',
@@ -86,9 +88,8 @@ col_map = {
     'product_name': 'PRODNAME',
     'development_phase': 'DEVPHASE',
     'link': 'LINK',
-    'source_2': 'SRC2',
-    'source_3': 'SRC3',
-    'source_4': 'SRC4',
+    #'source_3': 'SRC3',
+    #'source_4': 'SRC4',
     'about_other_1': 'ABOUTOTR1',
     'about_other_2': 'ABOUTOTR2',
     'about_other_3': 'ABOUTOTR3',
@@ -97,10 +98,10 @@ col_map = {
     'about_other_6': 'ABOUTOTR6',
     'about_other_7': 'ABOUTOTR7',
     'about_other_8': 'ABOUTOTR8',
-    'about_other_9': 'ABOUTOTR9',
-    'about_other_10': 'ABOUTOTR10',
-    'about_other_11': 'ABOUTOTR11',
-    'about_other_12': 'ABOUTOTR12'
+    'about_other_9': 'ABOUTOTR9'#,
+    #'about_other_10': 'ABOUTOTR10',
+    #'about_other_11': 'ABOUTOTR11',
+    #'about_other_12': 'ABOUTOTR12'
 }
 
 ## CREATE NEW DATAFRAME SELECTING COLUMNS
@@ -110,6 +111,51 @@ df3 = df2[col_select].copy()
 ## MAP NAMES
 df3.columns = [col_map[key] for key in col_map.keys()]
 
+
+##================================================
+## Readability Indices (complexity measure)
+##------------------------------------------------
+## strip returns  new lines chars
+text_stripped = df3.BODYTEXT.apply(lambda x: x.replace('\r\n\r\n', ' ') if isinstance(x,str) else x)
+## Gunning Fog Index
+df3['RIGFOG'] = text_stripped.apply(lambda x: gunning_fog(x) if isinstance(x, str) else None)
+## Consensus of Readability Indices;  @see https://pypi.org/project/textstat/
+##   mode of: flesch_kincaid_grade()
+##            flesch_reading_ease()
+##            smog_index()
+##            coleman_liau_index()
+##            automated_readability_index()
+##            dale_chall_readability_score()
+##            linsear_write_formula()
+##            gunning_fog()
+df3['RICONSENSUS'] = text_stripped.apply(lambda x: text_standard(x, float_output=True) if isinstance(x, str) else None)
+
+
+##================================================
+##  Output
+##------------------------------------------------
 ## CREATE NEW MONGODB COLLECTION
 collection_new.insert_many([row.to_dict() for i,row in df3.iterrows()])
+
+## Write CSV
+csv_file = os.path.join(out_dir, '%s.csv' % out_file)
+df3.to_csv(csv_file, index=False)
+
+## Write Excel
+xlsx_file = os.path.join(out_dir, '%s.xlsx' % out_file)
+df3.to_excel(xlsx_file, index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

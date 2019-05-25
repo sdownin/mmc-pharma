@@ -1,0 +1,123 @@
+======================================
+Complexity
+======================================
+
+Fog Index, one of the most widely used measures of language complexity in prior studies
+(e.g., Biddle, Hilary, & Verdi, 2009; Dougal, Engelberg, Garcia, & Parsons, 2012; Li, 2008;
+Miller, 2010; Reilly & Richey, 2011)
+
+Biddle, G. C., Hilary, G., & Verdi, R. S. 2009. How does financial reporting quality relate to
+investment efficiency? Journal of Accounting and Economics, 48: 112-131.
+
+Dougal, C., Engelberg, J., Garcia, D., & Parsons, C. A. 2012. Journalists and the stock market.
+Review of Financial Studies, 25: 639-679
+
+Li, F. 2008. Annual report readability, current earnings, and earnings persistence. Journal of
+Accounting and Economics, 45: 221-247.
+
+Miller, B. P. 2010. The effects of reporting complexity on small and large investor trading.
+Accounting Review, 85: 2107-2143.
+
+Reilly, S. & Richey, S. 2011. Ballot question readability and roll-off: The impact of language
+complexity. Political Research Quarterly, 64: 59-67.
+
+
+======================================
+Vagueness
+======================================
+
+
+Hiller’s Communication Vagueness Dictionary, which contains 362 vague words and
+expressions on 10 dimensions of vagueness (for a detailed description, see Hiller (2011)). 
+
+The Hiller’s dictionary was originally developed to analyze
+university lectures (Hiller, Marcotte, & Martin, 1969) but has since been widely used to detect
+lack of clarity in communications in many other settings, such as program evaluations (e.g.,
+Wilson & Wineburg, 1993), questionnaire designs (e.g., Ford, Stetz, Bott, & O'Leary, 2000),
+political speeches (e.g., Hogenraad & Garagozov, 2014), and firms’ annual reports (e.g., Guo et
+al., 2017).
+
+Hiller, J. H., Marcotte, D. R., & Martin, T. 1969. Opinionation, vagueness, and specificitydistinctions: Essay traits measured by computer. American Educational Research
+Journal, 6: 271-286.
+
+Hiller, J. H.; Communication vagueness dictionary; Retrieved from
+https://provalisresearch.com/products/content-analysis-software/wordstatdictionary/communication-vagueness-dictionary/; January 10, 2011.
+
+
+
+======================================
+LDA
+======================================
+
+structural topic modeling (STM) (Bail et al., 2017; Roberts et al., 2014; Schmiedel et al., 2018),
+
+mixed methods approaches such as with critical discourse analysis to tie textual data analyzed using topic models with richer qualitative analysis (Vaara, Aranda, Etchanchu, Guyt, & Sele, 2019). 
+
+Aggarwal, Lee, and Hwang (2017) used topic modeling to operationalize review diversity in Yelp 
+
+Karanovic, Berends, and Engel (2018) used topic modeling to study actors’ perceptions of “platform capitalism” (Davis, 2016)
+
+hierarchical LDA (hLDA) (Blei, Griffiths, & Jordan, 2010). While LDA traditionally requires that a researcher set the number of topics (the k parameter), hLDA can generate the optimal number of topics based on other researcher-defined parameters, such as the number of hierarchical levels and number of terms per topic. 
+
+Tchalian, Glaser, Hannigan, and Lounsbury (2019) are using hLDA to identify the competing and complementary messaging efforts of stakeholders in the emergent electric vehicle (EV) industry.  ...Tchalian et al. (2019) to trace both the longitudinal appearance of different topics involved with the construction of the emergent EV category and their prominence within the discourse.  """"" This approach allows them to define the theoretical concept of
+***“institutional attention”***—the field-level convergence that both isolates and aggregates the various interests involved in the social construction of the EV as a market category. """""
+
+hierarchical arrangement of topics in their paper and others (e.g., Smith, Hawes, & Myers, 2014), reveals not only the primacy of ideas over time, but also the socio-cognitive meaning structures emphasized in cultural sociology (Mohr, 1998) and content analysis (Duriau et al., 2007), thus highlighting the great potential of topic modeling approaches for generating novel theoretical insights. 
+
+--------
+
+Bail, C. A. (2014). The cultural environment: Measuring culture with big data. Theory and
+Society, 43(3–4), 465–482
+
+Roberts, M. E., Stewart, B. M., Tingley, D., Lucas, C., Leder‐Luis, J., Gadarian, S. K.,
+Albertson, B., & Rand, D. G. (2014). Structural topic models for open-ended survey
+responses. American Journal of Political Science, 58(4), 1064–1082.
+
+Schmiedel, T., Müller, O., & vom Brocke, J. (2018). Topic modeling as a strategy of inquiry in
+organizational research. Organizational Research Methods, 3(1). https://doi.org/10.1177/1094428118773858
+
+Vaara, E., Aranda, A., Etchanchu, H., Guyt, J., and Sele, K. (2019). How to make use of
+structural topic modeling in critical discourse analysis? Working paper.
+
+Aggarwal, V., Lee, M. K., & Hwang, E. (2017). Status gains and subsequent effects on
+evaluations. Academy of Management Proceedings, 2017(1), 16355.
+
+Karanovic, J., Berends, H., & Engel, Y. (2018). Is platform capitalism legit? Ask the workers.
+Academy of Management Proceedings, 2018(1), 17038
+
+Davis, G. F. (2016). Can an economy survive without corporations? Technology and robust
+organizational alternatives. Academy of Management Perspectives, 30(2), 129–140
+
+Blei, D. M., Griffiths, T. L., & Jordan, M. I. (2010). The nested Chinese restaurant process and
+Bayesian nonparametric inference of topic hierarchies. Journal of the ACM, 57(2), 7:1–
+7:30
+
+Tchalian, H., Glaser, V. L., Hannigan, T. R., & Lounsbury, M. (2019). Institutional attention:
+Cultural entrepreneurship and the dynamics of category construction. Working paper
+
+Smith, A., Hawes, T., & Myers, M. (2014). Hiéarchie: Visualization for hierarchical topic
+models. In Proceedings of the Workshop on Interactive Language Learning,
+Visualization, and Interfaces (pp. 71–78). Baltimore, MD: Association for Computational
+Linguistics
+
+Mohr, J. W. (1998). Measuring meaning structures. Annual Review of Sociology, 24, 345–370
+
+Duriau, V. J., Reger, R. K., & Pfarrer, M. D. (2007). A content analysis of the content analysis
+literature in organization studies: Research themes, data sources, and methodological
+refinements. Organizational Research Methods, 10(1), 5–34.
+
+Almquist, Z. W., & Bagozzi, B. E. (2017). Using radical environmentalist texts to uncover
+network structure and network features. Sociological Methods & Research.
+https://doi.org/10.1177/0049124117729696
+
+
+
+
+
+
+
+
+
+
+
+
