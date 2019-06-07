@@ -25,14 +25,14 @@ MONGODB_COLLECTION_NEW  = 'news_firm_separate'
 ## map Firm ID to firm name search pattern
 firms = {
     'pfizer': ['pfizer'],
-    'gsk': ['glaxo'],
+    'gsk': ['glaxo','kline','gsk'],
     'merck': ['merck','plough'],  ## 2009 merck merged with schering-plough
-    'jnj': ['johnson'],
+    'jnj': ['johnson','jnj'],
     'novartis': ['novartis'],
     'roche': ['roche'],
     'sanofi': ['sanofi'],
     'astrazeneca': ['astrazeneca'],
-    'bms': ['bristol','squibb'],
+    'bms': ['bristol','squibb','bms'],
     'abbott': ['abbott'],
     'teva': ['teva'],
     'bayer': ['bayer'],
